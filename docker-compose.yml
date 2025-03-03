@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: nextjs_app
+    image: derrick93/nextdocker:production
+    restart: always
+    ports:
+      - "4000:3000"  # Expose le port 3000 du conteneur sur le port 4000 du serveur
+    environment:
+      - APP_ENV=production  # Remplace par tes variables d'environnement si nécessaire
