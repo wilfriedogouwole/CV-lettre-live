@@ -91,6 +91,6 @@ jobs:
         env:
           APP_ENV: ${{ secrets.APP_ENV }}
         run: |
-          docker pull derrick93/nextdocker:v1
-          docker run -p 4000:3000 -d derrick93/nextdocker:v1
+          docker pull derrick93/cvdocker:v1
+          docker run -p 4001:3000 -d derrick93/cvdocker:v1
           docker system prune --all --volumes --force

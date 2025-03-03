@@ -46,7 +46,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: derrick93/nextdocker:v1
+          tags: derrick93/cvdocker:v1
           build-args: |
             COMMIT_SHA=${{ github.sha }} \
             APP_ENV=${{ secrets.APP_ENV }} \
@@ -60,7 +60,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: derrick93/nextdocker:v2
+          tags: derrick93/cvdocker:v2
           build-args: |
             COMMIT_SHA=${{ github.sha }} \
             APP_ENV=${{ secrets.APP_ENV }} \
