@@ -19,7 +19,7 @@ RUN npm install
 COPY . .
 
 # Appliquer les migrations Prisma
-RUN npm prisma migrate deploy
+RUN npx prisma migrate deploy
 
 # Construire l'application
 RUN npm run build
