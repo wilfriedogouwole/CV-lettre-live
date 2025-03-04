@@ -78,7 +78,6 @@ jobs:
             -e CLERK_SECRET_KEY="${{ secrets.CLERK_SECRET_KEY }}" \
             -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
             --name cvdocker \
-            --restart unless-stopped \
             -d derrick93/cvdocker:v1
 
           # Nettoyage après déploiement
