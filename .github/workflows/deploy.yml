@@ -46,6 +46,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     secrets: inherit
 
+
   deploy:
     name: 🚀 Deploy
     runs-on: [self-hosted]
@@ -65,12 +66,20 @@ jobs:
       - name: 🚀 Run Docker Container
         run: |
           docker pull derrick93/cvdocker:v1
+          
+          # Arrêter et supprimer le conteneur s'il existe déjà
           docker stop cvdocker || true
           docker rm cvdocker || true
-          docker run -p 4001:
+
+          # Exécuter le conteneur proprement
+          docker run -p 4001:3000 \
             -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
             -e NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" \
             -e CLERK_SECRET_KEY="${{ secrets.CLERK_SECRET_KEY }}" \
             -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-            --name cvdocker -d derrick93/cvdocker:v1
+            --name cvdocker \
+            --restart unless-stopped \
+            -d derrick93/cvdocker:v1
+
+          # Nettoyage après déploiement
           docker system prune --all --volumes --force
