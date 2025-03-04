@@ -6,6 +6,10 @@ services:
     image: derrick93/cvdocker:production
     restart: always
     ports:
-      - "4001:3000"  # Expose le port 3000 du conteneur sur le port 4000 du serveur
+      - "4001:3000"
     environment:
-      - APP_ENV=production  # Remplace par tes variables d'environnement si nécessaire
+      - APP_ENV=production
+      - DATABASE_URL=${DATABASE_URL}  # Ajoutez cette ligne
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
