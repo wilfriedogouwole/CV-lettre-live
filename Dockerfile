@@ -9,11 +9,11 @@ WORKDIR /app
 # Copier les fichiers package.json et package-lock.json
 COPY package.json package-lock.json ./ 
 
-# Copier le dossier Prisma avant d'installer les dépendances
-COPY prisma ./prisma/
-
 # Installer les dépendances
 RUN npm install
+
+# Copier le dossier Prisma avant d'installer les dépendances
+COPY prisma ./prisma/
 
 # Copier tout le projet
 COPY . .
@@ -26,8 +26,6 @@ ENV DATABASE_URL=$DATABASE_URL
 
 # Générer le client Prisma
 RUN npx prisma generate
-
-RUN npx prisma migrate deploy
 
 # Construire l'application
 RUN npm run build
