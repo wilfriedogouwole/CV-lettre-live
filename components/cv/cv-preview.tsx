@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image";
+
 
 interface CVPreviewProps {
   cv: any;
@@ -46,7 +48,7 @@ function ElegantTemplate({ cv }: { cv: any }) {
           <div className="flex justify-center mb-6">
             <div className="w-48 h-48 rounded-full overflow-hidden bg-gray-200 border-4 border-white">
               {cv.content.personalInfo.photo ? (
-                <img 
+                <Image 
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
                   className="w-full h-full object-cover"
@@ -207,7 +209,7 @@ function CreativeTemplate({ cv }: { cv: any }) {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
               {cv.content.personalInfo.photo ? (
-                <img 
+                <Image
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
                   className="w-full h-full object-cover"
@@ -367,7 +369,7 @@ function MinimalistTemplate({ cv }: { cv: any }) {
           <div className="mb-8">
             <div className="w-32 h-32 rounded-full overflow-hidden bg-white mx-auto">
               {cv.content.personalInfo.photo ? (
-                <img 
+                <Image
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
                   className="w-full h-full object-cover"
@@ -468,7 +470,7 @@ function MinimalistTemplate({ cv }: { cv: any }) {
                   <div>
                     <h4 className="font-semibold">2019 - Présent</h4>
                     <p className="font-bold">Votre Poste</p>
-                    <p>Nom de l'Entreprise</p>
+                    <p>Nom de l&apos;Entreprise</p>
                   </div>
                 </div>
                 <p className="text-sm mt-2">Description de vos responsabilités et réalisations dans ce poste.</p>
@@ -478,7 +480,7 @@ function MinimalistTemplate({ cv }: { cv: any }) {
           
           {cv.content.languages.length > 0 && (
             <div>
-              <h3 className="text-lg font-bold mb-4 uppercase border-b pb-2">CENTRES D'INTÉRÊT</h3>
+              <h3 className="text-lg font-bold mb-4 uppercase border-b pb-2">CENTRES D&apos;INTÉRÊT</h3>
               <div className="flex flex-wrap gap-2">
                 {cv.content.languages.map((language: any, index: number) => (
                   <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
@@ -507,7 +509,7 @@ function ProfessionalTemplate({ cv }: { cv: any }) {
           <div className="mb-8">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md mx-auto">
               {cv.content.personalInfo.photo ? (
-                <img 
+                <Image 
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
                   className="w-full h-full object-cover"
@@ -747,7 +749,7 @@ function ModernTemplate({ cv }: { cv: any }) {
           <div>
             <div className="mb-8 flex justify-center">
               {cv.content.personalInfo.photo ? (
-                <img 
+                <Image
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
                   className="w-40 h-40 object-cover rounded-full border-4 border-blue-100"
@@ -816,7 +818,7 @@ function ModernTemplate({ cv }: { cv: any }) {
             )}
             
             <div className="bg-gray-100 p-6 rounded-lg">
-              <h3 className="text-xl font-bold text-blue-600 mb-4">Centres d'intérêt</h3>
+              <h3 className="text-xl font-bold text-blue-600 mb-4">Centres d&apos;intérêt</h3>
               <div className="flex flex-wrap gap-2">
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Voyages</span>
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Photographie</span>

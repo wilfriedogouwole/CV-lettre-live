@@ -1,11 +1,11 @@
 "use client"
 
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { FileText, PenLine, ExternalLink } from "lucide-react";
+import { ExternalLink, FileText, PenLine } from "lucide-react";
+import Link from "next/link";
 
 interface RecentDocumentsProps {
   cvs: any[];
@@ -24,7 +24,7 @@ export function RecentDocuments({ cvs, coverLetters }: RecentDocumentsProps) {
         </CardHeader>
         <CardContent>
           {cvs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Vous n'avez pas encore créé de CV.</p>
+            <p className="text-sm text-muted-foreground">Vous n&apos;avez pas encore créé de CV.</p>
           ) : (
             <div className="space-y-4">
               {cvs.slice(0, 5).map((cv) => (
@@ -65,7 +65,7 @@ export function RecentDocuments({ cvs, coverLetters }: RecentDocumentsProps) {
         </CardHeader>
         <CardContent>
           {coverLetters.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Vous n'avez pas encore créé de lettre de motivation.</p>
+            <p className="text-sm text-muted-foreground">Vous n&apos;avez pas encore créé de lettre de motivation.</p>
           ) : (
             <div className="space-y-4">
               {coverLetters.slice(0, 5).map((letter) => (

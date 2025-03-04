@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, PenLine, Clock, Calendar } from "lucide-react";
+import { Calendar, Clock, FileText, PenLine } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 const data = [
@@ -81,7 +81,7 @@ export function Overview({ cvCount, letterCount }: OverviewProps) {
           <Calendar className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">Aujourd'hui</div>
+          <div className="text-2xl font-bold">Aujourd&apos;hui</div>
           <p className="text-xs text-muted-foreground">
             {new Date().toLocaleDateString('fr-FR')}
           </p>

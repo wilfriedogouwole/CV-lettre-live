@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { createCV } from '@/lib/cv-actions';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -159,7 +160,7 @@ export default function CVTemplatesPage() {
               </CardHeader>
               <CardContent>
                 <div className="aspect-[3/4] overflow-hidden rounded-md">
-                  <img 
+                  <Image
                     src={template.thumbnail} 
                     alt={template.name} 
                     className="w-full h-full object-cover"

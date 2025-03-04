@@ -1,15 +1,15 @@
 "use client"
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, FileText, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { useCVs } from '@/hooks/use-cvs';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { motion } from 'framer-motion';
+import { FileText, Loader2, PlusCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function CVPage() {
   const router = useRouter();
@@ -73,7 +73,7 @@ export default function CVPage() {
           <CardHeader>
             <CardTitle>Aucun CV</CardTitle>
             <CardDescription>
-              Vous n'avez pas encore créé de CV. Commencez par en créer un nouveau.
+              Vous n&apos;avez pas encore créé de CV. Commencez par en créer un nouveau.
             </CardDescription>
           </CardHeader>
           <CardFooter>
