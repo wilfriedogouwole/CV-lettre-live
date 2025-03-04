@@ -30,9 +30,6 @@ ENV DATABASE_URL=$DATABASE_URL
 # Générer le client Prisma
 RUN npx prisma generate
 
-RUN if [ -f "./prisma/schema.prisma" ]; then npx prisma migrate deploy; fi
-
-
 # Construire l'application
 RUN npm run build
 
