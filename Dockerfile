@@ -18,9 +18,15 @@ RUN npm install
 # Copier tout le projet
 COPY . .
 
-# Appliquer les migrations Prisma
-RUN npx prisma migrate deploy
+# Ajout une commande de vérification avant la migration
+RUN npx prisma generate
 
+RUN echo "DATABASE_URL: $DATABASE_URL"
+
+
+# Appliquer les migrations Prisma
+# Option alternative : 
+RUN npx prisma migrate deploy || (echo "Migration failed" && exit 1)
 # Construire l'application
 RUN npm run build
 

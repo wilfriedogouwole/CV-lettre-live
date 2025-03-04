@@ -2,10 +2,10 @@ name: 🐳 Build And Push Docker Image
 
 on:
   workflow_call:
-    inputs:
-      tag:
-        type: string
-        description: The tag to push to the Docker registry.
+  push:
+    branches:
+      - main
+      - dev
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Utilisation du cache GitHub Actions
+      # Use GitHub Actions cache
       - name: ⚡️ Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -39,33 +39,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: 🐳 Build V1 Image
-        if: ${{ github.ref == 'refs/heads/main' }}
+      - name: 🐳 Build and Push Image
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: derrick93/cvdocker:v1
-          build-args:
-            COMMIT_SHA=${{ github.sha }} \
-            APP_ENV=${{ secrets.APP_ENV }} \
-            DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
-            CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} \
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: 🐳 Build V2 Image
-        if: ${{ github.ref == 'refs/heads/dev' }}
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: derrick93/cvdocker:v2
-          build-args:
-            COMMIT_SHA=${{ github.sha }}
-            APP_ENV=${{ secrets.APP_ENV }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/react-app:${{ github.ref == 'refs/heads/main' && 'latest' || 'dev' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
