@@ -1,15 +1,16 @@
 # Étape 1 : Construction de l'application Next.js
 FROM node:18-bullseye AS builder
 
-# Installer les dépendances
+# Installer les dépendances système nécessaires pour Prisma
 RUN apt-get update && apt-get install -y python3 make g++ rustc cargo libssl1.1
 
 WORKDIR /app
 
 # Copier les fichiers package.json et package-lock.json
 COPY package.json package-lock.json ./ 
-# Copier le dossier Prisma AVANT npm install
-COPY prisma ./prisma/  
+
+# Copier le dossier Prisma avant d'installer les dépendances
+COPY prisma ./prisma/
 
 # Installer les dépendances
 RUN npm install
@@ -18,7 +19,7 @@ RUN npm install
 COPY . .
 
 # Appliquer les migrations Prisma
-RUN npx prisma migrate deploy
+RUN npm prisma migrate deploy
 
 # Construire l'application
 RUN npm run build
@@ -28,14 +29,11 @@ FROM node:18-bullseye AS runner
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
-ENV DATABASE_URL=${DATABASE_URL}
-ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+# Variables d'environnement sensibles seront injectées au moment de l'exécution
+# Ne pas inclure directement les variables sensibles ici
 
-# Copier les fichiers essentiels
-COPY --from=builder /app/package.json /app/package-lock.json ./ 
+# Copier les fichiers essentiels depuis le builder
+COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/.next ./.next 
 COPY --from=builder /app/public ./public 
 COPY --from=builder /app/node_modules ./node_modules 
@@ -44,6 +42,8 @@ COPY --from=builder /app/start.sh /app/start.sh
 
 EXPOSE 3000
 
+# Rendre le script start.sh exécutable
 RUN chmod +x /app/start.sh
 
+# Entrée du conteneur
 ENTRYPOINT ["/app/start.sh"]
