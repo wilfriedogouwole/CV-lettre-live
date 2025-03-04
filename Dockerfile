@@ -26,6 +26,9 @@ ENV DATABASE_URL=$DATABASE_URL
 
 # Générer le client Prisma
 RUN npx prisma generate
+
+RUN npx prisma migrate deploy
+
 # Construire l'application
 RUN npm run build
 
