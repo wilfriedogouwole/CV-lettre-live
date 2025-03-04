@@ -227,7 +227,7 @@ export default function Home() {
           
           <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} CV Master. Tous droits réservés
+              © {new Date().getFullYear()} CV Master. Tous droits réservé<s className=""></s>
             </p>
           </div>
         </div>
