@@ -96,8 +96,6 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
             docker pull derrick93/cvdocker:v1
-            docker stop cvdocker || true
-            docker rm cvdocker || true
             docker run -p 4001:3000 \
               -e APP_ENV="$APP_ENV" \
               -e DATABASE_URL="$DATABASE_URL" \
