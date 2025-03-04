@@ -64,14 +64,17 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: 🚀 Run Docker Container
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           docker pull derrick93/cvdocker:v1
           
-          # Arrêter et supprimer le conteneur s'il existe déjà
           docker stop cvdocker || true
           docker rm cvdocker || true
 
-          # Exécuter le conteneur proprement
           docker run -p 4001:3000 \
             -e DATABASE_URL="${DATABASE_URL}" \
             -e NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}" \
@@ -79,6 +82,4 @@ jobs:
             -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
             --name cvdocker -d derrick93/cvdocker:v1
 
-
-          # Nettoyage après déploiement
           docker system prune --all --volumes --force
