@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Trash2, Upload } from "lucide-react";
+import Image from "next/image";
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
@@ -300,7 +301,7 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
                     <input {...getInputProps()} />
                     {photoPreview ? (
                       <div className="flex flex-col items-center">
-                        <img 
+                        <Image 
                           src={photoPreview} 
                           alt="Photo de profil" 
                           className="w-32 h-32 object-cover rounded-full mb-2"
@@ -389,7 +390,7 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
             <CardContent className="space-y-6">
               {cv.content.education.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Aucune formation ajoutée. Cliquez sur "Ajouter" pour commencer.
+                  Aucune formation ajoutée. Cliquez sur &apos;Ajouter&apos; pour commencer.
                 </p>
               ) : (
                 cv.content.education.map((edu: any, index: number) => (
@@ -478,7 +479,7 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
             <CardContent className="space-y-6">
               {cv.content.experience.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Aucune expérience ajoutée. Cliquez sur "Ajouter" pour commencer.
+                  Aucune expérience ajoutée. Cliquez sur &apos;Ajouter&apos; pour commencer.
                 </p>
               ) : (
                 cv.content.experience.map((exp: any, index: number) => (
@@ -567,7 +568,7 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
             <CardContent>
               {cv.content.skills.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Aucune compétence ajoutée. Cliquez sur "Ajouter" pour commencer.
+                  Aucune compétence ajoutée. Cliquez sur &apos;Ajouter&apos; pour commencer.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -623,7 +624,7 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
             <CardContent>
               {cv.content.languages.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Aucune langue ajoutée. Cliquez sur "Ajouter" pour commencer.
+                  Aucune langue ajoutée. Cliquez sur &apos;Ajouter&apos; pour commencer.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

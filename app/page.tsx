@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import { MoveRight, FileText, PenLine, LayoutDashboard, Lightbulb, Sparkles } from 'lucide-react';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { FileText, Lightbulb, MoveRight, PenLine, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -72,7 +72,7 @@ export default function Home() {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-              Tout ce dont vous avez besoin pour réussir votre recherche d'emploi
+              Tout ce dont vous avez besoin pour réussir votre recherche d&apos;emploi
             </h2>
             
             <div className="grid md:grid-cols-3 gap-10">
@@ -98,7 +98,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Lettres de motivation personnalisées</h3>
                 <p className="text-muted-foreground mb-6">
-                  Créez des lettres de motivation adaptées à chaque offre d'emploi pour augmenter vos chances d'entretien.
+                  Créez des lettres de motivation adaptées à chaque offre d&apos;emploi pour augmenter vos chances d&apos;entretien.
                 </p>
                 <Link href="/cover-letters" className="mt-auto">
                   <Button variant="outline" className="group">
@@ -112,9 +112,9 @@ export default function Home() {
                 <div className="bg-primary/10 p-4 rounded-full mb-6">
                   <Lightbulb className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Conseils d'experts</h3>
+                <h3 className="text-xl font-semibold mb-3">Conseils d&apos;experts</h3>
                 <p className="text-muted-foreground mb-6">
-                  Accédez à des conseils pratiques pour optimiser votre candidature et réussir vos entretiens d'embauche.
+                  Accédez à des conseils pratiques pour optimiser votre candidature et réussir vos entretiens d&apos;embauche.
                 </p>
                 <Link href="/conseils" className="mt-auto">
                   <Button variant="outline" className="group">
@@ -193,7 +193,7 @@ export default function Home() {
                 <span className="font-bold text-xl">CV Master</span>
               </Link>
               <p className="text-muted-foreground text-sm">
-                Créez des CV et des lettres de motivation professionnels pour décrocher l'emploi de vos rêves.
+                Créez des CV et des lettres de motivation professionnels pour décrocher l&apos;emploi de vos rêves.
               </p>
             </div>
             
@@ -218,7 +218,7 @@ export default function Home() {
             <div>
               <h3 className="font-semibold mb-4">Légal</h3>
               <ul className="space-y-3">
-                <li><Link href="/conditions" className="text-sm text-muted-foreground hover:text-foreground">Conditions d'utilisation</Link></li>
+                <li><Link href="/conditions" className="text-sm text-muted-foreground hover:text-foreground">Conditions d&apos;utilisation</Link></li>
                 <li><Link href="/confidentialite" className="text-sm text-muted-foreground hover:text-foreground">Politique de confidentialité</Link></li>
                 <li><Link href="/cookies" className="text-sm text-muted-foreground hover:text-foreground">Politique de cookies</Link></li>
               </ul>

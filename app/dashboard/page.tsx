@@ -1,11 +1,10 @@
-import { auth } from '@clerk/nextjs';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardHeader from '@/components/dashboard/dashboard-header';
 import { Overview } from '@/components/dashboard/overview';
 import { RecentDocuments } from '@/components/dashboard/recent-documents';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { prisma } from '@/lib/prisma';
 import { createUser } from '@/lib/user-actions';
-import { currentUser } from '@clerk/nextjs';
+import { auth, currentUser } from '@clerk/nextjs';
 
 export default async function DashboardPage() {
   const { userId } = auth();
@@ -44,7 +43,7 @@ export default async function DashboardPage() {
       
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+          <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
           <TabsTrigger value="documents">Documents récents</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
