@@ -9,11 +9,14 @@ WORKDIR /app
 # Copier les fichiers package.json et package-lock.json
 COPY package.json package-lock.json ./ 
 
-# Installer les dépendances
-RUN npm install
-
 # Copier le dossier Prisma avant d'installer les dépendances
 COPY prisma ./prisma/
+
+# Vérifier que Prisma a bien été copié
+RUN ls -la ./prisma
+
+# Installer les dépendances
+RUN npm install
 
 # Copier tout le projet
 COPY . .
