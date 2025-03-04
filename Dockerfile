@@ -27,6 +27,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+ENV CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+
+
 # Copier les fichiers essentiels
 COPY --from=builder /app/package.json /app/package-lock.json ./ 
 COPY --from=builder /app/.next ./.next 
