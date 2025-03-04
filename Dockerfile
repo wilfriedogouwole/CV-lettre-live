@@ -17,6 +17,9 @@ RUN npm install
 # Copier tout le projet
 COPY . .
 
+# Appliquer les migrations Prisma
+RUN npx prisma migrate deploy
+
 # Construire l'application
 RUN npm run build
 
@@ -26,9 +29,10 @@ FROM node:18-bullseye AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-
 ENV CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
-
+ENV DATABASE_URL=${DATABASE_URL}
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # Copier les fichiers essentiels
 COPY --from=builder /app/package.json /app/package-lock.json ./ 
