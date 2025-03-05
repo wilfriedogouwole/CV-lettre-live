@@ -1,13 +1,22 @@
 "use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
-import { FileText, PenLine, LayoutDashboard, Lightbulb } from "lucide-react";
+import { FileText, LayoutDashboard, Lightbulb, Palette, PenLine } from "lucide-react";
+import { useTheme } from "next-themes";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function DashboardNav() {
   const pathname = usePathname();
+  const { setTheme } = useTheme();
 
   const navItems = [
     {
@@ -35,7 +44,7 @@ export function DashboardNav() {
   return (
     <div className="border-b">
       <div className="flex h-16 items-center px-4">
-        <Link href="/dashboard" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <FileText className="h-6 w-6 mr-2" />
           <span className="font-bold">CV Master</span>
         </Link>
@@ -57,6 +66,31 @@ export function DashboardNav() {
           ))}
         </nav>
         <div className="ml-auto flex items-center space-x-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Palette className="h-5 w-5" />
+                <span className="sr-only">Changer le thème</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Clair
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Sombre
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("blue")}>
+                Bleu
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("green")}>
+                Vert
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("purple")}>
+                Violet
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <UserButton afterSignOutUrl="/" />
         </div>
       </div>

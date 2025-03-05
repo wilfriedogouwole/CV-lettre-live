@@ -1,10 +1,11 @@
-import './globals.css';
+import { Footer } from '@/components/footer/footer';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/toaster';
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ClerkProvider } from '@clerk/nextjs';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as SonnerToaster } from '@/components/ui/sonner';
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,14 +26,15 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
+            enableSystem={false}
+            themes={["light", "dark", "blue", "green", "purple"]}
           >
             {children}
             <Toaster />
             <SonnerToaster />
           </ThemeProvider>
         </body>
+        <Footer />
       </html>
     </ClerkProvider>
   );
