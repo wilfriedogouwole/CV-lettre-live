@@ -17,31 +17,31 @@ const templates = [
     id: "template1",
     name: "Élégant",
     description: "Un design épuré avec une mise en page moderne et élégante",
-    thumbnail: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=300&auto=format&fit=crop"
+    thumbnail: "/images/cv1.jpg"
   },
   {
     id: "template2",
     name: "Créatif",
     description: "Un design contemporain avec des éléments graphiques modernes",
-    thumbnail: "https://images.unsplash.com/photo-1586282391129-76a6df230234?q=80&w=300&auto=format&fit=crop"
+    thumbnail: "/images/cv3.jpg"
   },
   {
     id: "template3",
     name: "Minimaliste",
     description: "Un design simple et efficace qui met en valeur votre contenu",
-    thumbnail: "https://images.unsplash.com/photo-1586282023358-9bfaa12d8a9b?q=80&w=300&auto=format&fit=crop"
+    thumbnail: "/images/cv5.jpg"
   },
   {
     id: "template4",
     name: "Professionnel",
     description: "Un design structuré idéal pour les profils expérimentés",
-    thumbnail: "https://images.unsplash.com/photo-1586282391332-f4634215c8c3?q=80&w=300&auto=format&fit=crop"
+    thumbnail: "/images/cv2.jpg"
   },
   {
     id: "template5",
     name: "Moderne",
     description: "Un design audacieux avec une mise en page originale",
-    thumbnail: "https://images.unsplash.com/photo-1586282023555-8c3f4cb2a574?q=80&w=300&auto=format&fit=crop"
+    thumbnail: "/images/cv4.jpg"
   }
 ];
 
@@ -163,6 +163,8 @@ export default function CVTemplatesPage() {
                   <Image
                     src={template.thumbnail} 
                     alt={template.name} 
+                    width={250}
+                    height={150}
                     className="w-full h-full object-cover"
                   />
                 </div>
