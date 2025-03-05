@@ -58,7 +58,7 @@ export default function CoverLetterEditPage() {
         content: letter.content,
         jobPosition: letter.jobPosition,
         company: letter.company,
-        templateId: previewTemplate
+        templateId: previewTemplate as string
       });
 
       toast({
