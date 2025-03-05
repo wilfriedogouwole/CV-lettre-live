@@ -37,6 +37,7 @@ model CoverLetter {
   id          String   @id @default(cuid())
   title       String
   content     String   @db.Text
+  templateId  String?  @default("template1")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String
