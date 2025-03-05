@@ -8,122 +8,127 @@ export default function LetterPreview({ letter, templateId }: LetterPreviewProps
   const renderTemplate = () => {
     switch (templateId) {
       case "template1":
-        return <ClassicTemplate letter={letter} />;
+        return <BusinessTemplate letter={letter} />;
       case "template2":
-        return <ModernTemplate letter={letter} />;
+        return <MinimalTemplate letter={letter} />;
       case "template3":
-        return <CreativeTemplate letter={letter} />;
+        return <MedicalTemplate letter={letter} />;
+      case "template4":
+        return <ResignationTemplate letter={letter} />;
+      case "template5":
+        return <CorporateTemplate letter={letter} />;
       default:
-        return <ClassicTemplate letter={letter} />;
+        return <BusinessTemplate letter={letter} />;
     }
   };
 
   return (
     <div className="flex justify-center">
-      <div className="w-[210mm] min-h-[297mm] bg-white shadow-lg">
+      <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden">
         {renderTemplate()}
       </div>
     </div>
   );
 }
 
-// Template 1: Classic Design
-function ClassicTemplate({ letter }: { letter: any }) {
+// Template 1: Business Style (basé sur le premier modèle)
+function BusinessTemplate({ letter }: { letter: any }) {
   return (
-    <div className="min-h-[297mm] flex flex-col p-8">
-      {/* En-tête */}
-      <div className="mb-12">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">[Votre nom]</h1>
-            <p className="text-gray-600">[Votre adresse]</p>
-            <p className="text-gray-600">[Votre email]</p>
-            <p className="text-gray-600">[Votre téléphone]</p>
-          </div>
-          <div className="text-right">
-            <p>{new Date().toLocaleDateString()}</p>
-          </div>
+    <div className="relative">
+      <div className="bg-[#ffd700] h-16 flex items-center px-8">
+        <div className="bg-white p-2 rounded">
+          <div className="w-8 h-8 bg-primary" />
         </div>
       </div>
-
-      {/* Destinataire */}
-      <div className="mb-8">
-        <p className="font-bold">{letter.company || "Nom de l'entreprise"}</p>
-        <p>Service des Ressources Humaines</p>
-        <p>[Adresse de l'entreprise]</p>
-      </div>
-
-      {/* Objet */}
-      <div className="mb-8">
-        <p className="font-bold">Objet : {letter.jobPosition ? `Candidature au poste de ${letter.jobPosition}` : "Candidature"}</p>
-      </div>
-
-      {/* Corps de la lettre */}
-      <div className="flex-1">
-        <p className="mb-6">Madame, Monsieur,</p>
-        
-        <div className="text-justify leading-relaxed whitespace-pre-wrap mb-8">
-          {letter.content}
-        </div>
-
-        <p className="mb-8">Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.</p>
-
+      
+      <div className="p-8 space-y-6">
         <div className="text-right">
-          <p className="font-bold">[Votre nom]</p>
-          <p className="italic mt-8">[Signature]</p>
+          <p>{new Date().toLocaleDateString()}</p>
+        </div>
+
+        <div>
+          <p className="font-bold">Cher/Chère {letter.recipient || "Responsable du recrutement"},</p>
+        </div>
+
+        <div className="whitespace-pre-wrap">{letter.content}</div>
+
+        <div className="mt-8">
+          <p>Cordialement,</p>
+          <p className="font-bold mt-2">[Votre nom]</p>
+          <p className="text-muted-foreground">{letter.jobPosition || "[Poste]"}</p>
+          <p className="text-muted-foreground">{letter.company || "[Entreprise]"}</p>
+        </div>
+      </div>
+
+      <div className="bg-[#ffd700] h-8 absolute bottom-0 left-0 right-0" />
+    </div>
+  );
+}
+
+// Template 2: Minimal Style (basé sur le modèle minimaliste)
+function MinimalTemplate({ letter }: { letter: any }) {
+  return (
+    <div className="p-8 space-y-6">
+      <div className="border-l-4 border-primary pl-4">
+        <h1 className="text-3xl font-serif">{letter.jobPosition || "[Poste]"}</h1>
+        <p className="text-muted-foreground">{letter.company || "[Entreprise]"}</p>
+      </div>
+
+      <div className="flex justify-between items-center text-sm text-muted-foreground">
+        <div>
+          <p>Ref: {letter.reference || "LM-" + new Date().getFullYear()}</p>
+        </div>
+        <div>
+          <p>{new Date().toLocaleDateString()}</p>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <p>Madame, Monsieur,</p>
+        <div className="whitespace-pre-wrap leading-relaxed">{letter.content}</div>
+      </div>
+
+      <div className="pt-8 mt-8 border-t">
+        <p>Cordialement,</p>
+        <p className="font-bold mt-2">[Votre nom]</p>
+        <div className="mt-4 text-sm text-muted-foreground">
+          <p>Email: [votre@email.com]</p>
+          <p>Tél: [+33 6 XX XX XX XX]</p>
         </div>
       </div>
     </div>
   );
 }
 
-// Template 2: Modern Design
-function ModernTemplate({ letter }: { letter: any }) {
+// Template 3: Medical Style (basé sur le modèle médical)
+function MedicalTemplate({ letter }: { letter: any }) {
   return (
-    <div className="min-h-[297mm] flex flex-col">
-      {/* En-tête moderne */}
-      <div className="bg-primary h-32 p-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">[Votre nom]</h1>
-        <p>{letter.jobPosition || "Votre titre professionnel"}</p>
-      </div>
-
-      {/* Contenu principal */}
-      <div className="flex-1 p-8">
-        <div className="grid grid-cols-2 gap-8 mb-12">
+    <div className="bg-gradient-to-br from-[#E6F7F5] to-white">
+      <div className="p-8">
+        <div className="flex justify-between items-start mb-12">
           <div>
-            <p className="text-sm text-gray-500 mb-1">Contact</p>
-            <p>[Votre adresse]</p>
-            <p>[Votre email]</p>
-            <p>[Votre téléphone]</p>
+            <h1 className="text-2xl font-bold text-primary mb-2">{letter.jobPosition || "[Poste]"}</h1>
+            <p className="text-muted-foreground">{letter.company || "[Entreprise]"}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-500 mb-1">Date</p>
-            <p>{new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString()}</p>
           </div>
         </div>
 
-        <div className="mb-8">
-          <p className="font-bold">{letter.company || "Nom de l'entreprise"}</p>
-          <p>Service des Ressources Humaines</p>
-          <p>[Adresse de l'entreprise]</p>
+        <div className="space-y-6">
+          <p>Madame, Monsieur,</p>
+          <div className="whitespace-pre-wrap leading-relaxed">{letter.content}</div>
         </div>
 
-        <div className="mb-8">
-          <p className="font-bold">Objet : {letter.jobPosition ? `Candidature au poste de ${letter.jobPosition}` : "Candidature"}</p>
-        </div>
-
-        <div className="flex-1">
-          <p className="mb-6">Madame, Monsieur,</p>
-          
-          <div className="text-justify leading-relaxed whitespace-pre-wrap mb-8">
-            {letter.content}
+        <div className="mt-12 flex justify-between items-end">
+          <div>
+            <p>Cordialement,</p>
+            <p className="font-bold mt-2">[Votre nom]</p>
           </div>
-
-          <p className="mb-8">Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.</p>
-
-          <div className="text-right">
-            <p className="font-bold">[Votre nom]</p>
-            <p className="italic mt-8">[Signature]</p>
+          <div className="text-right text-sm text-primary">
+            <p>[votre@email.com]</p>
+            <p>[+33 6 XX XX XX XX]</p>
+            <p>[Adresse]</p>
           </div>
         </div>
       </div>
@@ -131,61 +136,70 @@ function ModernTemplate({ letter }: { letter: any }) {
   );
 }
 
-// Template 3: Creative Design
-function CreativeTemplate({ letter }: { letter: any }) {
+// Template 4: Resignation Style (basé sur le modèle de démission)
+function ResignationTemplate({ letter }: { letter: any }) {
   return (
-    <div className="min-h-[297mm] flex flex-col">
-      {/* En-tête créatif */}
-      <div className="relative h-48 bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white">
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="relative z-10">
-          <h1 className="text-3xl font-bold mb-2">[Votre nom]</h1>
-          <p className="text-xl">{letter.jobPosition || "Votre titre professionnel"}</p>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{
-          clipPath: "polygon(0 100%, 100% 100%, 100% 0, 0 100%)"
-        }} />
+    <div className="p-8">
+      <div className="mb-12">
+        <h1 className="text-3xl font-serif text-center mb-2">LETTRE DE MOTIVATION</h1>
+        <div className="w-16 h-1 bg-primary mx-auto" />
       </div>
 
-      {/* Contenu principal */}
-      <div className="flex-1 p-8">
-        <div className="grid grid-cols-2 gap-8 mb-12">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm font-medium mb-2">Contact</p>
-            <p>[Votre adresse]</p>
-            <p>[Votre email]</p>
-            <p>[Votre téléphone]</p>
+      <div className="mb-8">
+        <p>{new Date().toLocaleDateString()}</p>
+        <p className="mt-2">{letter.company || "[Entreprise]"}</p>
+        <p>{letter.address || "[Adresse]"}</p>
+      </div>
+
+      <div className="space-y-6">
+        <p>Madame, Monsieur,</p>
+        <div className="whitespace-pre-wrap leading-relaxed">{letter.content}</div>
+      </div>
+
+      <div className="mt-12">
+        <div className="w-32 h-0.5 bg-primary mb-4" />
+        <p className="font-bold">[Votre nom]</p>
+        <p className="text-muted-foreground">{letter.jobPosition || "[Poste]"}</p>
+      </div>
+    </div>
+  );
+}
+
+// Template 5: Corporate Style (basé sur le modèle d'entreprise)
+function CorporateTemplate({ letter }: { letter: any }) {
+  return (
+    <div>
+      <div className="bg-gradient-to-r from-primary/90 to-primary p-8 text-white">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-xl font-bold">★</span>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500 mb-1">Date</p>
-            <p>{new Date().toLocaleDateString()}</p>
+          <div>
+            <h1 className="text-2xl font-bold">{letter.jobPosition || "[Poste]"}</h1>
+            <p className="text-white/80">{letter.company || "[Entreprise]"}</p>
           </div>
         </div>
+      </div>
 
-        <div className="mb-8">
-          <p className="font-bold">{letter.company || "Nom de l'entreprise"}</p>
-          <p>Service des Ressources Humaines</p>
-          <p>[Adresse de l'entreprise]</p>
+      <div className="p-8 space-y-6">
+        <div className="flex justify-end">
+          <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString()}</p>
         </div>
 
-        <div className="mb-8">
-          <p className="font-bold">Objet : {letter.jobPosition ? `Candidature au poste de ${letter.jobPosition}` : "Candidature"}</p>
+        <div className="space-y-6">
+          <p>Madame, Monsieur,</p>
+          <div className="whitespace-pre-wrap leading-relaxed">{letter.content}</div>
         </div>
 
-        <div className="flex-1">
-          <p className="mb-6">Madame, Monsieur,</p>
-          
-          <div className="text-justify leading-relaxed whitespace-pre-wrap mb-8">
-            {letter.content}
+        <div className="pt-8 mt-8 border-t flex justify-between items-end">
+          <div>
+            <p>Cordialement,</p>
+            <p className="font-bold mt-2">[Votre nom]</p>
           </div>
-
-          <p className="mb-8">Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.</p>
-
-          <div className="text-right">
-            <div className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg">
-              <p className="font-bold">[Votre nom]</p>
-              <p className="italic mt-4">[Signature]</p>
-            </div>
+          <div className="text-right text-sm">
+            <p className="text-primary font-medium mb-1">Contact</p>
+            <p className="text-muted-foreground">[votre@email.com]</p>
+            <p className="text-muted-foreground">[+33 6 XX XX XX XX]</p>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ interface CoverLetterData {
   jobPosition?: string;
   company?: string;
   content: string;
+  templateId?: string;
 }
 
 interface CoverLetterUpdateData {
@@ -16,6 +17,7 @@ interface CoverLetterUpdateData {
   jobPosition?: string;
   company?: string;
   content?: string;
+  templateId?: string;
 }
 
 export async function createCoverLetter(data: CoverLetterData) {
@@ -41,6 +43,7 @@ export async function createCoverLetter(data: CoverLetterData) {
         jobPosition: data.jobPosition || null,
         company: data.company || null,
         content: data.content,
+        templateId: data.templateId || 'template1',
         userId
       }
     });
