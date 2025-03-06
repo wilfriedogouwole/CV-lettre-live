@@ -51,6 +51,8 @@ function ElegantTemplate({ cv }: { cv: any }) {
                 <Image 
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
+                  width={250}
+                  height={250}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -212,6 +214,8 @@ function CreativeTemplate({ cv }: { cv: any }) {
                 <Image
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
+                  width={250}
+                  height={250}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -372,6 +376,8 @@ function MinimalistTemplate({ cv }: { cv: any }) {
                 <Image
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
+                  width={250}
+                  height={250}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -512,6 +518,8 @@ function ProfessionalTemplate({ cv }: { cv: any }) {
                 <Image 
                   src={cv.content.personalInfo.photo} 
                   alt="Photo de profil" 
+                  width={250}
+                  height={250}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -751,7 +759,9 @@ function ModernTemplate({ cv }: { cv: any }) {
               {cv.content.personalInfo.photo ? (
                 <Image
                   src={cv.content.personalInfo.photo} 
-                  alt="Photo de profil" 
+                  alt="Photo de profil"
+                  width={250}
+                  height={250}
                   className="w-40 h-40 object-cover rounded-full border-4 border-blue-100"
                 />
               ) : (
