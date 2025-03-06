@@ -34,6 +34,21 @@ export default async function DashboardPage() {
     take: 5,
   });
 
+  // Get user's job applications
+  const applications = await prisma.jobApplication.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+    include: {
+      job: true
+    }
+  });
+
+  // Get counts
+  const applicationCount = await prisma.jobApplication.count({
+    where: { userId }
+  });
+
   return (
     <>
       <DashboardHeader
@@ -47,10 +62,18 @@ export default async function DashboardPage() {
           <TabsTrigger value="documents">Documents récents</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
-          <Overview cvCount={cvs.length} letterCount={coverLetters.length} />
+          <Overview 
+            cvCount={cvs.length} 
+            letterCount={coverLetters.length}
+            applicationCount={applicationCount}
+          />
         </TabsContent>
         <TabsContent value="documents" className="space-y-4">
-          <RecentDocuments cvs={cvs} coverLetters={coverLetters} />
+          <RecentDocuments 
+            cvs={cvs} 
+            coverLetters={coverLetters}
+            applications={applications}
+          />
         </TabsContent>
       </Tabs>
     </>

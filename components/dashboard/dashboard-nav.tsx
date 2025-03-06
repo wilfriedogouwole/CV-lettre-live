@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
-import { FileText, LayoutDashboard, Lightbulb, Palette, PenLine } from "lucide-react";
+import { Briefcase, FileText, LayoutDashboard, Lightbulb, Palette, PenLine } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,6 +34,13 @@ export function DashboardNav() {
       href: "/dashboard/letters",
       icon: <PenLine className="mr-2 h-4 w-4" />,
     },
+
+    {
+      title: "Offres d'emploi",
+      href: "/jobs",
+      icon: <Briefcase className="mr-2 h-4 w-4" />,
+    },
+    
     {
       title: "Conseils",
       href: "/conseils",

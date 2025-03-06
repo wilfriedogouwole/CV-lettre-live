@@ -34,7 +34,9 @@ export default function RootLayout({
             <SonnerToaster />
           </ThemeProvider>
         </body>
+        <footer>
         <Footer />
+        </footer>
       </html>
     </ClerkProvider>
   );

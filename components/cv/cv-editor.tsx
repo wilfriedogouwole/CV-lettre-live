@@ -303,7 +303,9 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
                       <div className="flex flex-col items-center">
                         <Image 
                           src={photoPreview} 
-                          alt="Photo de profil" 
+                          alt="Photo de profil"
+                          width={250}
+                          height={250}
                           className="w-32 h-32 object-cover rounded-full mb-2"
                         />
                         <p className="text-sm text-muted-foreground">Cliquez ou glissez-déposez pour changer</p>
