@@ -32,6 +32,9 @@ export default function Home() {
             <Link href="/conseils" className="text-sm font-medium hover:text-primary">
               Conseils
             </Link>
+            <Link href="/jobs" className="text-sm font-medium hover:text-primary">
+            Offres d&lsquo;emploi
+            </Link>
           </nav>
           <div className="flex items-center space-x-4">
             <SignedIn>

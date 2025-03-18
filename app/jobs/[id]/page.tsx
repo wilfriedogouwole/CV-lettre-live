@@ -7,9 +7,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useCVs } from "@/hooks/use-cvs";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Building, Clock, Euro, Loader2, MapPin, Send } from "lucide-react";
+import { ArrowLeft, Bookmark, Building, Clock, Euro, Loader2, MapPin, Send } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  description: string;
+  salary: string;
+  type: string;
+  url: string;
+  source: string;
+  createdAt: Date;
+}
 
 export default function JobDetailPage() {
   const params = useParams();
@@ -20,39 +33,39 @@ export default function JobDetailPage() {
   const [selectedCV, setSelectedCV] = useState<string>("");
   const [coverLetter, setCoverLetter] = useState<string>("");
   const [isApplying, setIsApplying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [job, setJob] = useState<Job | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
-  // Mock job data - replace with actual API call
-  const job = {
-    id: params.id,
-    title: "Développeur Full Stack",
-    company: "Tech Company",
-    location: "Paris",
-    type: "CDI",
-    salary: "45-55k€",
-    description: `Nous recherchons un développeur Full Stack expérimenté pour rejoindre notre équipe.
+  const fetchJobDetails = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/jobs/${params.id}`);
+      const data = await response.json();
+      console.log(data);
+      
+      if (!response.ok) throw new Error(data.error || "Erreur de récupération");
+      
+      setJob(data.job);
+    } catch (err) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les détails de l'offre",
+        variant: "destructive",
+      });
+      router.push("/jobs");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params.id, router, toast]);
 
-Responsabilités :
-- Développement de nouvelles fonctionnalités
-- Maintenance et amélioration des applications existantes
-- Participation aux choix techniques
-- Collaboration avec l'équipe produit
-
-Compétences requises :
-- JavaScript/TypeScript
-- React.js
-- Node.js
-- SQL/NoSQL
-- Git
-
-Avantages :
-- Mutuelle d'entreprise
-- Tickets restaurant
-- RTT
-- Télétravail partiel`,
-    requirements: "3+ ans d'expérience en développement web",
-    createdAt: new Date(),
-    source: "Indeed"
-  };
+  useEffect(() => {
+    fetchJobDetails();
+    
+    // Vérifie si l'offre est déjà sauvegardée
+    const savedJobs = JSON.parse(localStorage.getItem("savedJobs") || "[]");
+    setIsSaved(savedJobs.includes(params.id));
+  }, [fetchJobDetails, params.id]);
 
   const handleApply = async () => {
     if (!selectedCV) {
@@ -66,7 +79,8 @@ Avantages :
 
     setIsApplying(true);
     try {
-      // Implement application logic here
+      // Simuler un appel API pour l'envoi de candidature
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast({
         title: "Candidature envoyée",
@@ -85,6 +99,57 @@ Avantages :
     }
   };
 
+  const handleSaveJob = () => {
+    if (!job) return;
+    
+    const savedJobs = JSON.parse(localStorage.getItem("savedJobs") || "[]");
+    
+    if (!isSaved) {
+      const updatedSavedJobs = [...new Set([...savedJobs, job.id])];
+      localStorage.setItem("savedJobs", JSON.stringify(updatedSavedJobs));
+      setIsSaved(true);
+      toast({ 
+        title: "Offre sauvegardée", 
+        description: "Ajoutée à vos favoris." 
+      });
+    } else {
+      const updatedSavedJobs = savedJobs.filter((id: string) => id !== job.id);
+      localStorage.setItem("savedJobs", JSON.stringify(updatedSavedJobs));
+      setIsSaved(false);
+      toast({ 
+        title: "Offre retirée", 
+        description: "Retirée de vos favoris." 
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-10 flex items-center justify-center min-h-[70vh]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!job) {
+    return (
+      <div className="container mx-auto py-10">
+        <Card>
+          <CardHeader>
+            <CardTitle>Offre non trouvée</CardTitle>
+            <CardDescription>L&apos;offre d&apos;emploi recherchée n&apos;existe pas ou a été supprimée.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button onClick={() => router.push("/jobs")}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour aux offres
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-10">
       <Button
@@ -99,18 +164,30 @@ Avantages :
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-2 space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">{job.title}</CardTitle>
-              <CardDescription>
-                <div className="flex items-center space-x-2">
-                  <Building className="h-4 w-4" />
-                  <span>{job.company}</span>
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-2xl">{job.title}</CardTitle>
+                  <CardDescription>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Building className="h-4 w-4" />
+                      <span>{job.company}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <MapPin className="h-4 w-4" />
+                      <span>{job.location}</span>
+                    </div>
+                  </CardDescription>
                 </div>
-                <div className="flex items-center space-x-2 mt-1">
-                  <MapPin className="h-4 w-4" />
-                  <span>{job.location}</span>
-                </div>
-              </CardDescription>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleSaveJob}
+                  className={isSaved ? "text-primary" : ""}
+                >
+                  <Bookmark className="h-5 w-5" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between mb-6">
@@ -120,7 +197,10 @@ Avantages :
                 </div>
                 <div className="flex items-center space-x-2">
                   <Euro className="h-4 w-4" />
-                  <span>{job.salary}</span>
+                  <span>{job.salary || "Non précisé"}</span>
+                </div>
+                <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
+                  {job.type}
                 </div>
               </div>
               <div className="prose prose-gray max-w-none">
@@ -128,9 +208,7 @@ Avantages :
                 <div className="whitespace-pre-wrap text-muted-foreground">
                   {job.description}
                 </div>
-                
-                <h3 className="text-lg font-semibold mt-6 mb-2">Prérequis</h3>
-                <p className="text-muted-foreground">{job.requirements}</p>
+              
               </div>
             </CardContent>
           </Card>
@@ -159,12 +237,12 @@ Avantages :
                         <SelectItem value="loading" disabled>
                           Chargement...
                         </SelectItem>
-                      ) : cvs.length === 0 ? (
+                      ) : cvs?.length === 0 ? (
                         <SelectItem value="none" disabled>
                           Aucun CV disponible
                         </SelectItem>
                       ) : (
-                        cvs.map((cv) => (
+                        cvs?.map((cv) => (
                           <SelectItem key={cv.id} value={cv.id}>
                             {cv.title}
                           </SelectItem>
@@ -222,10 +300,19 @@ Avantages :
             <CardHeader>
               <CardTitle>Offres similaires</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Aucune offre similaire pour le moment.
-              </p>
+            <CardContent className="p-0">
+              <div className="divide-y">
+                {/* Ces offres seraient normalement chargées depuis une API */}
+                {[1, 2, 3].map((item) => (
+                  <div key={item} className="p-4 hover:bg-muted/50 cursor-pointer" onClick={() => router.push("/jobs/similar-job-id")}>
+                    <h3 className="font-medium line-clamp-1">Poste similaire #{item}</h3>
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="text-sm text-muted-foreground">Entreprise exemple</div>
+                      <div className="text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5">CDI</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>

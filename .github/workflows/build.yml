@@ -54,6 +54,10 @@ jobs:
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}} \
             CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}} \
+            POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} \
+
+
 
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
@@ -72,6 +76,8 @@ jobs:
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}} \
             CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}} \
+            POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} \
 
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
