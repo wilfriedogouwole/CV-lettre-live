@@ -8,13 +8,13 @@ export default authMiddleware({
     "/conseils",
     "/cv-templates",
     "/cover-letters",
-    "/blog",  // Ajout de la route /blog
-    "/conditions", // Ajout de la route /conditions
+    "/blog",
+    "/conditions", 
     "/faq", 
     "/confidentialite",    "/contact",
     "/cookies", 
-    "/contact"// Ajout de la route /faq
-  ]
+    "/contact"// 
+  ],
 });
 
 export const config = {
