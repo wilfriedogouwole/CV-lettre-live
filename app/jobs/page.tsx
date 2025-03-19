@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import {
   Bookmark,
-  Building, Clock, Euro,
+  Building,
   Eye,
   Loader2, MapPin
 } from "lucide-react";
@@ -163,18 +163,18 @@ useEffect(() => {
               </p>
               <div className="flex justify-between mt-4 text-sm">
                 <div className="flex items-center gap-1">
-                  <Euro className="h-4 w-4" /> {job.salary}
+                 💰 {job.salary}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" /> {job.type}
+                 💼 {job.type}
                 </div>
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
               <span className="text-xs text-muted-foreground">{job.source}</span>
               <div className="flex gap-2">
-              {/*<Button onClick={() => router.push(`/jobs/${job.url}`)}>*/}
-              <Button onClick={() => router.push(`${job.url}`)}>
+              <Button onClick={() => router.push(`/jobs/${job.id}`)}>
+              {/*<Button onClick={() => router.push(`${job.url}`)}>*/}
 
                   <Eye className="h-4 w-4" />
                 </Button>
