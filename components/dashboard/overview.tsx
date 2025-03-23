@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, FileText, PenLine, Send } from "lucide-react";
@@ -29,6 +29,30 @@ const data = [
     name: "Juin",
     total: 5,
   },
+  {
+    name: "Juil",
+    total: 3,
+  },
+  {
+    name: "Août",
+    total: 1,
+  },
+  {
+    name: "Sep",
+    total: 4,
+  },
+  {
+    name: "Oct",
+    total: 2,
+  },
+  {
+    name: "Nov",
+    total: 5,
+  },
+  {
+    name: "Dec",
+    total: 5,
+  },
 ];
 
 interface OverviewProps {
@@ -39,7 +63,7 @@ interface OverviewProps {
 
 export function Overview({ cvCount, letterCount, applicationCount }: OverviewProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">CV créés</CardTitle>
@@ -88,7 +112,7 @@ export function Overview({ cvCount, letterCount, applicationCount }: OverviewPro
           </p>
         </CardContent>
       </Card>
-      <Card className="col-span-4">
+      <Card className="col-span-1 sm:col-span-2 lg:col-span-4">
         <CardHeader>
           <CardTitle>Activité</CardTitle>
           <CardDescription>

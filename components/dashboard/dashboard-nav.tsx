@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
-import { Briefcase, FileText, LayoutDashboard, Lightbulb, Palette, PenLine } from "lucide-react";
+import { Briefcase, FileText, LayoutDashboard, Lightbulb, Menu, Palette, PenLine } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,13 +34,11 @@ export function DashboardNav() {
       href: "/dashboard/letters",
       icon: <PenLine className="mr-2 h-4 w-4" />,
     },
-
     {
       title: "Offres d'emploi",
       href: "/jobs",
       icon: <Briefcase className="mr-2 h-4 w-4" />,
     },
-    
     {
       title: "Conseils",
       href: "/conseils",
@@ -55,7 +53,7 @@ export function DashboardNav() {
           <FileText className="h-6 w-6 mr-2" />
           <span className="font-bold">CV Master</span>
         </Link>
-        <nav className="mx-6 flex items-center space-x-4 lg:space-x-6 flex-1">
+        <nav className="mx-6 hidden lg:flex items-center justify-center  space-x-4 lg:space-x-6 flex-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -99,6 +97,34 @@ export function DashboardNav() {
             </DropdownMenuContent>
           </DropdownMenu>
           <UserButton afterSignOutUrl="/" />
+        </div>
+        <div className="lg:hidden ml-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {navItems.map((item) => (
+                <DropdownMenuItem key={item.href} asChild>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "flex items-center",
+                      pathname === item.href
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {item.icon}
+                    {item.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
