@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q") || "";
     const location = searchParams.get("location") || "";
+    const typeFilter = searchParams.get("typeFilter") || "";
 
     // 🔐 1. Récupération du token OAuth2
     const tokenRes = await axios.post(
@@ -32,6 +33,9 @@ export async function GET(request: Request) {
     }
     if (location) {
       apiUrl.searchParams.append("commune", location);
+    }
+    if (typeFilter && typeFilter !== "tous") {
+      apiUrl.searchParams.append("typeContrat", typeFilter);
     }
 
     apiUrl.searchParams.append("range", "0-19");
