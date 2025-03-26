@@ -196,3 +196,18 @@
     @apply my-8 border-t border-border;
   }
 }
+
+@media print {
+  .cv-section {
+    page-break-inside: avoid;
+    margin-bottom: 20mm;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  ul {
+    page-break-inside: avoid;
+  }
+}

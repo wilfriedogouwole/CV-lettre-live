@@ -24,6 +24,8 @@ export default function CVPreview({ cv, templateId }: CVPreviewProps) {
         return <ProfessionalTemplate cv={cv} />;
       case "template5":
         return <ModernTemplate cv={cv} />;
+      case "template nouveau":
+        return <NewModernTemplate cv={cv} />;
       default:
         return <ElegantTemplate cv={cv} />;
     }
@@ -31,7 +33,7 @@ export default function CVPreview({ cv, templateId }: CVPreviewProps) {
 
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         {renderTemplate()}
       </div>
     </div>
@@ -836,6 +838,158 @@ function ModernTemplate({ cv }: { cv: any }) {
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Sport</span>
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Lecture</span>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NewModernTemplate({ cv }: { cv: any }) {
+  return (
+    <div className="relative bg-white min-h-[29,7cm] min-w-[210mm]">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-32 h-32 border-t-2 border-l-2"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#E6E6FA] rounded-bl-full opacity-50"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#E6E6FA] opacity-20"></div>
+
+      <div className="grid grid-cols-12 gap-2 p-4">
+        {/* Left Column */}
+        <div className="col-span-5 bg-[#E6E6FA] bg-opacity-20 p-8 rounded-lg">
+          {/* Profile Image */}
+          <div className="mb-8">
+            <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-8 border-white shadow-lg">
+              {cv.content.personalInfo.photo ? (
+                <Image 
+                src={cv.content.personalInfo.photo} 
+                alt="Photo de profil" 
+                width={250}
+                height={250}
+                className="w-full h-full object-cover"
+              />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                  <span className="text-4xl font-serif text-gray-400">
+                    {cv.content.personalInfo.name ? cv.content.personalInfo.name.charAt(0) : "J"}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Name and Title */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-serif mb-2">{cv.content.personalInfo.name || "Jessica Marie"}</h1>
+            <h2 className="text-xl text-gray-600 font-light">{cv.content.personalInfo.title || "Web Designer"}</h2>
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-4 mb-12">
+            <div className="flex items-center space-x-3">
+              <span>📧</span>
+              <span className="text-gray-700">{cv.content.personalInfo.email || "name@company.com"}</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span>🏠</span>
+              <span className="text-gray-700">{cv.content.personalInfo.address || "Street Avenue 90"}</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span>📱</span>
+              <span className="text-gray-700">{cv.content.personalInfo.phone || "+09-8209-283-038"}</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span>🌐</span>
+              <span className="text-gray-700">www.yourcompany.com</span>
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div className="mb-8">
+            <h3 className="text-xl font-serif mb-6">Language</h3>
+            <div className="space-y-4">
+              {cv.content.languages.map((language: any, index: number) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>{language.name || "English"}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-1 rounded-full">
+                    <div 
+                      className="bg-[#E6E6FA] h-1 rounded-full" 
+                      style={{ 
+                        width: language.level === "Débutant" ? "25%" : 
+                               language.level === "Intermédiaire" ? "50%" : 
+                               language.level === "Avancé" ? "75%" : 
+                               language.level === "Bilingue" ? "100%" : "75%" 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="col-span-7 p-8">
+          {/* Profile */}
+          <div className="mb-12">
+            <h3 className="text-xl font-serif mb-4 inline-block bg-[#E6E6FA] bg-opacity-30 px-4 py-1">Profile</h3>
+            <p className="text-gray-600 leading-relaxed">
+              {cv.content.personalInfo.summary || "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam quis nostrud exerci tationwlsa ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat."}
+            </p>
+          </div>
+
+          {/* Education */}
+          <div className="mb-12">
+            <h3 className="text-xl font-serif mb-6 inline-block bg-[#E6E6FA] bg-opacity-30 px-4 py-1">Education</h3>
+            <div className="space-y-6">
+              {cv.content.education.map((edu: any, index: number) => (
+                <div key={index} className="mb-4">
+                  <h4 className="font-medium text-lg">{edu.degree || "Bachelor Degree"} <span className="text-gray-500">({edu.startDate || "2011"} - {edu.endDate || "2015"})</span></h4>
+                  <p className="text-gray-600 mb-2">{edu.institution || "University of Web Design"}</p>
+                  <p className="text-gray-500 text-sm">{edu.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed diam nonummy nibh euismod tincidunt ut laoreet dolores ea commagna aliquam erat volutpat."}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Work Experience */}
+          <div className="mb-12">
+            <h3 className="text-xl font-serif mb-6 inline-block bg-[#E6E6FA] bg-opacity-30 px-4 py-1">Work Experience</h3>
+            <div className="space-y-6">
+              {cv.content.experience.map((exp: any, index: number) => (
+                <div key={index} className="mb-4">
+                  <h4 className="font-medium text-lg">{exp.position || "Junior Web Designer"} <span className="text-gray-500">({exp.startDate || "2017"} - {exp.endDate || "2018"})</span></h4>
+                  <p className="text-gray-600 mb-2">{exp.company || "Startup Company"}</p>
+                  <p className="text-gray-500 text-sm">{exp.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed diam nonummy nibh euismod tincidunt ut laoreet dolores ea commagna aliquam erat volutpat."}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skills */}
+          <div>
+            <h3 className="text-xl font-serif mb-6 inline-block bg-[#E6E6FA] bg-opacity-30 px-4 py-1">Skills</h3>
+            <div className="grid grid-cols-2 gap-6">
+              {cv.content.skills.map((skill: any, index: number) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>{skill.name || "HTML"}</span>
+                  </div>
+                  <div className="w-full bg-black-200 h-1 rounded-full">
+                    <div 
+                      className="bg-[#E6E6FA] h-1 rounded-full" 
+                      style={{ 
+                        width: skill.level === "Débutant" ? "25%" : 
+                               skill.level === "Intermédiaire" ? "50%" : 
+                               skill.level === "Avancé" ? "75%" : 
+                               skill.level === "Expert" ? "100%" : "75%" 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
