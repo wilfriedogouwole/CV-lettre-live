@@ -72,58 +72,91 @@ export default function CVEditPage() {
     }
   };
 
-  const handleDownload = async () => {
-    if (!previewRef.current) return;
-    
-    setIsDownloading(true);
-    setActiveTab("preview"); // Switch to preview tab for download
-    
-    try {
-      // Wait for the tab switch to complete
-      setTimeout(async () => {
-        const element = previewRef.current;
-        if (!element) {
-          throw new Error("Élément de prévisualisation non trouvé");
-        }
-        
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          logging: false
-        });
-        
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-        
-        const imgWidth = 210; // A4 width in mm
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save(`${cv.title || 'CV'}.pdf`);
-        
-        toast({
-          title: "Téléchargement terminé",
-          description: "Votre CV a été téléchargé avec succès"
-        });
-      }, 500);
-    } catch (error) {
-      console.error("Erreur lors du téléchargement:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors du téléchargement du CV",
-        variant: "destructive"
+ const handleDownload = async () => {
+  if (!previewRef.current) return;
+
+  setIsDownloading(true);
+  setActiveTab("preview");
+
+  try {
+    setTimeout(async () => {
+      const element = previewRef.current;
+      if (!element) throw new Error("Élément de prévisualisation non trouvé");
+
+      // Réinitialiser les styles pour la capture complète
+      const originalStyles = {
+        width: element.style.width,
+        height: element.style.height,
+        overflow: element.style.overflow,
+      };
+
+      // Appliquer des styles optimisés pour l'export
+      element.style.width = "210mm"; // Largeur A4
+      element.style.maxHeight = "none";
+      element.style.overflow = "visible";
+
+      const canvas = await html2canvas(element, {
+        scale: 3, // Augmenter l'échelle pour la qualité
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        scrollY: -window.scrollY, // Ignorer le défilement
       });
-    } finally {
-      setTimeout(() => {
-        setIsDownloading(false);
-      }, 1000);
-    }
-  };
+
+      // Restaurer les styles originaux
+      Object.assign(element.style, originalStyles);
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Calculer les dimensions de l'image
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Découper en pages si nécessaire
+      let position = 0;
+      while (position < imgHeight) {
+        if (position > 0) pdf.addPage();
+        
+        const sectionHeight = Math.min(pageHeight, imgHeight - position);
+        
+        pdf.addImage(
+          canvas.toDataURL("image/png", 1.0),
+          "PNG",
+          0,
+          -position,
+          imgWidth,
+          imgHeight,
+          undefined,
+          "FAST"
+        );
+        
+        position += pageHeight;
+      }
+
+      pdf.save(`${cv.title || "CV"}.pdf`);
+      
+      toast({
+        title: "Téléchargement terminé",
+        description: "Votre CV a été téléchargé avec succès",
+      });
+    }, 500);
+  } catch (error) {
+    toast({
+      title: "Erreur",
+      description: "Une erreur est survenue lors du téléchargement du CV",
+      variant: "destructive",
+    });
+  } finally {
+    setIsDownloading(false);
+  }
+};
 
   const handleUpdateCV = (updatedData: any) => {
     setCV((prev: any) => ({
@@ -267,6 +300,13 @@ export default function CVEditPage() {
                 onClick={() => handleChangeTemplate("template5")}
               >
                 Moderne
+              </Button>
+              <Button 
+                variant={previewTemplate === "template nouveau" ? "default" : "outline"} 
+                className="text-xs h-auto py-1"
+                onClick={() => handleChangeTemplate("template nouveau")}
+              >
+                Nouveau
               </Button>
             </div>
           </div>

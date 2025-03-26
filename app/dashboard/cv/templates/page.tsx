@@ -43,6 +43,13 @@ const templates = [
     description: "Un design audacieux avec une mise en page originale",
     thumbnail: "/images/cv4.jpg"
   }
+  ,
+    {
+      title: "Template nouveau",
+      name: "nouveau",
+      description: "Un design avec une mise en page en deux colonnes",
+      thumbnail: "/images/cv2.jpg"
+    },
 ];
 
 export default function CVTemplatesPage() {
@@ -152,7 +159,7 @@ export default function CVTemplatesPage() {
                   ? "ring-2 ring-primary" 
                   : "hover:shadow-md"
               }`}
-              onClick={() => setSelectedTemplate(template.id)}
+              onClick={() => setSelectedTemplate((template.id ?? null))}
             >
               <CardHeader className="pb-2">
                 <CardTitle>{template.name}</CardTitle>
@@ -173,7 +180,7 @@ export default function CVTemplatesPage() {
                 <Button 
                   variant={selectedTemplate === template.id ? "default" : "outline"}
                   className="w-full"
-                  onClick={() => setSelectedTemplate(template.id)}
+                  onClick={() => setSelectedTemplate((template.id ?? null))}
                 >
                   {selectedTemplate === template.id ? "Sélectionné" : "Sélectionner"}
                 </Button>

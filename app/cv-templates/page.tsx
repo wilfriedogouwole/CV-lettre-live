@@ -40,7 +40,14 @@ export default function CVTemplatesPage() {
       description: "Un design audacieux avec une mise en page originale",
       features: ["Design moderne", "Mise en page innovante", "Sections dynamiques"],
       image: "/images/cv4.jpg"
-    }
+    },
+    {
+      title: "Template nouveau",
+      description: "Un design professionnel avec une mise en page en deux colonnes",
+      features: ["Design moderne", "Mise en page innovante", "Sections dynamiques"],
+      image: "/images/cv2.jpg"
+    },
+
   ];
 
   const openImageModal = (imageSrc: string) => {
