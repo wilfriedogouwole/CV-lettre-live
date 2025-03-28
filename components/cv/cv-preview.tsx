@@ -846,7 +846,7 @@ function ModernTemplate({ cv }: { cv: any }) {
   );
 }
 
-function NewModernTemplate({ cv }: { cv: any }) {
+function NewModernTemplate2({ cv }: { cv: any }) {
   return (
     <div className="relative bg-white min-h-[29,7cm] min-w-[210mm]">
       {/* Decorative Elements */}
@@ -997,3 +997,606 @@ function NewModernTemplate({ cv }: { cv: any }) {
     </div>
   );
 }
+
+
+
+function NewModernTemplate3({ cv }: { cv: any }) {
+  return (
+    <div className="relative bg-white min-h-[29.7cm] min-w-[21cm] p-12">
+      {/* Éléments décoratifs */}
+      <div className="absolute top-0 left-0 w-32 h-32 border-t-2 border-l-2 border-gray-300"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#E6E6FA] rounded-bl-full opacity-50"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-[#E6E6FA] opacity-30"></div>
+
+      {/* En-tête */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-serif mb-2 uppercase">{cv.content.personalInfo.name || "LIZZIE JOHAN"}</h1>
+        <h2 className="text-xl text-gray-600 font-light tracking-widest">GRAPHIC DESIGNER</h2>
+      </div>
+
+      {/* Expérience */}
+      <div className="mb-10">
+        <h3 className="text-xl font-serif mb-6 border-b-2 border-gray-300 pb-2 uppercase">Experience</h3>
+        {cv.content.experience.map((exp: any, index: number) => (
+          <div key={index} className="mb-6">
+            <h4 className="font-medium text-lg">
+              {exp.position || "POSITION TITLE"} 
+              <span className="text-gray-500 font-normal"> ({exp.startDate || "2004"} - {exp.endDate || "2006"})</span>
+            </h4>
+            <p className="text-gray-600 mb-2 italic">{exp.company || "Company Name"}</p>
+            <p className="text-gray-500">{exp.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Éducation */}
+      <div className="mb-10">
+        <h3 className="text-xl font-serif mb-6 border-b-2 border-gray-300 pb-2 uppercase">Education</h3>
+        {cv.content.education.map((edu: any, index: number) => (
+          <div key={index} className="mb-6">
+            <h4 className="font-medium text-lg">
+              {edu.degree || "BACHELOR ECONOMIC"}
+              <span className="text-gray-500 font-normal"> ({edu.startDate || "2004"} - {edu.endDate || "2006"})</span>
+            </h4>
+            <p className="text-gray-600 mb-2 italic">{edu.institution || "University Name"}</p>
+            <p className="text-gray-500">{edu.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Compétences */}
+      <div className="mb-10">
+        <h3 className="text-xl font-serif mb-6 border-b-2 border-gray-300 pb-2 uppercase">Skills</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {cv.content.skills.map((skill: any, index: number) => (
+            <div key={index} className="text-gray-600">
+              • {skill.name || "WEB DESIGN"}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* À propos */}
+      <div className="mb-10">
+        <h3 className="text-xl font-serif mb-6 border-b-2 border-gray-300 pb-2 uppercase">About me</h3>
+        <p className="text-gray-500 leading-relaxed">
+          {cv.content.personalInfo.summary || "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed diam nonummy..."}
+        </p>
+      </div>
+
+      {/* Récompenses */}
+      <div className="mb-10">
+        <h3 className="text-xl font-serif mb-6 border-b-2 border-gray-300 pb-2 uppercase">Award</h3>
+        {cv.content.awards?.map((award: any, index: number) => (
+          <div key={index} className="mb-6">
+            <h4 className="font-medium text-lg">
+              {award.name || "BEST FREELANCE"} 
+              <span className="text-gray-500 font-normal"> ({award.year || "2019-2018"})</span>
+            </h4>
+            <p className="text-gray-500">{award.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Contact */}
+      <div className="mt-12">
+        <h3 className="text-xl font-serif mb-6 border-b-2 border-gray-300 pb-2 uppercase">Contact</h3>
+        <div className="text-gray-600 space-y-2">
+          <p>Address: {cv.content.personalInfo.address || "128 Fish Street, Your City 26300"}</p>
+          <p>Phone: {cv.content.personalInfo.phone || "012 349 0799"}</p>
+          <p>Email: {cv.content.personalInfo.email || "your@email.com"}</p>
+          <p>Website: www.yourcompany.com</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NewModernTemplate4({ cv }: { cv: any }) {
+  return (
+    <div className="relative bg-white min-h-[29.7cm] min-w-[21cm] p-12 font-sans">
+      {/* Éléments décoratifs */}
+      <div className="absolute top-0 left-0 w-24 h-24 border-t-4 border-l-4 border-gray-800"></div>
+      <div className="absolute top-0 right-0 w-24 h-24 bg-[#f0f0f5] rounded-bl-full"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-8 bg-[#f0f0f5]"></div>
+
+      {/* En-tête */}
+      <div className="mb-16 text-center">
+        <h1 className="text-5xl font-bold uppercase tracking-wider mb-2">LIZZIE JOHAN</h1>
+        <h2 className="text-xl text-gray-600 letter-spacing-4 uppercase">GRAPHIC DESIGNER</h2>
+      </div>
+
+      {/* Colonnes conteneur */}
+      <div className="flex gap-12">
+        {/* Colonne gauche */}
+        <div className="w-1/3 space-y-10">
+          {/* Contact */}
+          <div>
+            <h3 className="text-lg font-bold uppercase mb-4 border-b-2 border-gray-800 pb-2">Contact</h3>
+            <ul className="space-y-3 text-sm">
+              <li>128 Fish Street</li>
+              <li>Your City 26300</li>
+              <li>012 349 0799</li>
+              <li>your@email.com</li>
+              <li>www.yourcompany.com</li>
+            </ul>
+          </div>
+
+          {/* Compétences */}
+          <div>
+            <h3 className="text-lg font-bold uppercase mb-4 border-b-2 border-gray-800 pb-2">Skills</h3>
+            <ul className="space-y-2 text-sm">
+              {cv.content.skills.map((skill: any) => (
+                <li key={skill.name}>• {skill.name}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Colonne droite */}
+        <div className="w-2/3 space-y-10">
+          {/* Expérience */}
+          <div>
+            <h3 className="text-lg font-bold uppercase mb-6 border-b-2 border-gray-800 pb-2">Experience</h3>
+            <div className="space-y-6">
+              {cv.content.experience.map((exp: any) => (
+                <div key={exp.position}>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-base">{exp.position}</h4>
+                    <span className="text-gray-600 text-sm">({exp.startDate} - {exp.endDate})</span>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Éducation */}
+          <div>
+            <h3 className="text-lg font-bold uppercase mb-6 border-b-2 border-gray-800 pb-2">Education</h3>
+            <div className="space-y-6">
+              {cv.content.education.map((edu: any) => (
+                <div key={edu.degree}>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-base">{edu.degree}</h4>
+                    <span className="text-gray-600 text-sm">({edu.startDate} - {edu.endDate})</span>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{edu.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Récompenses */}
+          <div>
+            <h3 className="text-lg font-bold uppercase mb-6 border-b-2 border-gray-800 pb-2">Award</h3>
+            <div className="space-y-6">
+              {cv.content.awards?.map((award: any) => (
+                <div key={award.name}>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-base">{award.name}</h4>
+                    <span className="text-gray-600 text-sm">({award.year})</span>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{award.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section About Me en bas */}
+      <div className="mt-16 pt-8 border-t-2 border-gray-300">
+        <h3 className="text-lg font-bold uppercase mb-4">About me</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          {cv.content.personalInfo.summary}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+function NewModernTemplate5({ cv }: { cv: any }) {
+  return (
+    <div className="flex min-h-screen font-sans">
+      {/* Left Sidebar - Dark Background */}
+      <div className="w-1/3 bg-black text-white p-8">
+        {/* About Me Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">ABOUT ME</h2>
+          <p className="text-sm text-gray-300">
+            {cv.content.personalInfo.summary || "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
+          </p>
+        </div>
+
+        {/* Awards Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">AWARD</h2>
+          {cv.content.awards && cv.content.awards.map((award: any, index: number) => (
+            <div key={index} className="mb-4">
+              <h3 className="font-semibold">{award.name || "Best Freelance"}</h3>
+              <p className="text-sm text-gray-300">{award.year || "2009-2020"}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Contact Section */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4">CONTACT</h2>
+          <div className="space-y-2 text-sm">
+            <p>📍 {cv.content.personalInfo.address || "Address 123 Main Street"}</p>
+            <p>📞 {cv.content.personalInfo.phone || "012 345 6789"}</p>
+            <p>✉️ {cv.content.personalInfo.email || "your@email.com"}</p>
+            <p>🌐 {cv.content.personalInfo.website || "www.yourcompany.com"}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Content - White Background */}
+      <div className="w-2/3 bg-white p-8">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-5xl font-bold">{cv.content.personalInfo.name || "LIZZIE JOHAN"}</h1>
+          <h2 className="text-2xl text-gray-600 mt-2">
+            {cv.content.personalInfo.title || "GRAPHIC DESIGNER"}
+          </h2>
+        </div>
+
+        {/* Experience Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 border-b-2 border-yellow-500 pb-2">EXPERIENCE</h2>
+          {cv.content.experience.map((exp: any, index: number) => (
+            <div key={index} className="mb-6 relative pl-8">
+              <div className="absolute left-0 top-1 w-4 h-4 bg-yellow-500 rounded-full"></div>
+              <h3 className="font-semibold text-lg">{exp.position || "Position Title"} ({exp.startDate || "2004-2006"})</h3>
+              <p className="text-gray-600">{exp.company || "Company Name"}</p>
+              <p className="text-sm text-gray-500">{exp.description || "Lorem ipsum description"}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Education Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 border-b-2 border-yellow-500 pb-2">EDUCATION</h2>
+          {cv.content.education.map((edu: any, index: number) => (
+            <div key={index} className="mb-6 relative pl-8">
+              <div className="absolute left-0 top-1 w-4 h-4 bg-yellow-500 rounded-full"></div>
+              <h3 className="font-semibold text-lg">{edu.degree || "Bachelor Degree"} ({edu.startDate || "2004-2006"})</h3>
+              <p className="text-gray-600">{edu.institution || "University Name"}</p>
+              <p className="text-sm text-gray-500">{edu.description || "Lorem ipsum description"}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Skills Section */}
+        <div>
+          <h2 className="text-2xl font-bold mb-6 border-b-2 border-yellow-500 pb-2">SKILLS</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {cv.content.skills.map((skill: any, index: number) => (
+              <div key={index}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span>{skill.name || "Skill Name"}</span>
+                  <span>
+                    {skill.level === "Débutant" ? "25%" : 
+                     skill.level === "Intermédiaire" ? "50%" : 
+                     skill.level === "Avancé" ? "75%" : 
+                     skill.level === "Expert" ? "100%" : "75%"}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 h-2 rounded-full">
+                  <div 
+                    className="bg-yellow-500 h-2 rounded-full" 
+                    style={{ 
+                      width: skill.level === "Débutant" ? "25%" : 
+                             skill.level === "Intermédiaire" ? "50%" : 
+                             skill.level === "Avancé" ? "75%" : 
+                             skill.level === "Expert" ? "100%" : "75%" 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function NewModernTemplate6({ cv }: { cv: any }) {
+  return (
+    <div className="flex min-h-screen font-sans">
+      {/* Left Sidebar */}
+      <div className="w-1/3 bg-black text-white p-8 relative">
+        {/* Profile Photo */}
+        <div className="absolute top-0 right-0 w-1/2 h-48 bg-yellow-500 transform skew-x-[-15deg] origin-top-right"></div>
+        <div className="relative z-10 mb-8 flex justify-center">
+          {cv.content.personalInfo.photo ? (
+            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white">
+              <Image 
+                src={cv.content.personalInfo.photo} 
+                alt="Profile Picture" 
+                width={192} 
+                height={192} 
+                className="object-cover w-full h-full"
+              />
+            </div>
+          ) : (
+            <div className="w-48 h-48 rounded-full bg-gray-300 flex items-center justify-center text-4xl">
+              {cv.content.personalInfo.name ? cv.content.personalInfo.name.charAt(0) : "B"}
+            </div>
+          )}
+        </div>
+
+        {/* Contact Me Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-4 flex items-center">
+            <span className="mr-2">📞</span> CONTACT ME
+          </h2>
+          <div className="space-y-2 text-sm">
+            <p>📱 {cv.content.personalInfo.phone || "+7-310-310-5588"}</p>
+            <p>✉️ {cv.content.personalInfo.email || "yourinfo@email.com"}</p>
+            <p>🌐 {cv.content.personalInfo.website || "www.yourwebsite.com"}</p>
+            <p>📍 {cv.content.personalInfo.address || "769 Prudence Street, Lincoln Park, MI 48146"}</p>
+          </div>
+        </div>
+
+        {/* References Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold mb-4 flex items-center">
+            <span className="mr-2">👥</span> REFERENCES
+          </h2>
+          {cv.content.references && cv.content.references.map((ref: any, index: number) => (
+            <div key={index} className="mb-4">
+              <h3 className="font-semibold">{ref.name || "Darwin B. Magana"}</h3>
+              <p className="text-sm text-gray-300">{ref.company || "2813 Shobe Lane Mancos, CO"}</p>
+              <p className="text-sm">📞 {ref.phone || "+1-970-533-3393"}</p>
+              <p className="text-sm">✉️ {ref.email || "www.yourwebsite.com"}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Education Section */}
+        <div>
+          <h2 className="text-xl font-bold mb-4 flex items-center">
+            <span className="mr-2">🎓</span> EDUCATION
+          </h2>
+          {cv.content.education.map((edu: any, index: number) => (
+            <div key={index} className="mb-4">
+              <h3 className="font-semibold">{edu.institution || "Stanford University"}</h3>
+              <p className="text-sm text-gray-300">{edu.degree || "Master Degree Graduate"}</p>
+              <p className="text-sm">{edu.startDate || "2011"} - {edu.endDate || "2013"}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right Content */}
+      <div className="w-2/3 bg-white p-8 relative">
+        {/* Yellow accent triangle */}
+        <div className="absolute bottom-0 right-0 w-1/3 h-48 bg-yellow-50 transform skew-x-[deg] origin-bottom-right"></div>
+        
+        <div className="relative z-10">
+          {/* Header */}
+          <div className="mb-12">
+            <h1 className="text-5xl font-bold">
+              {cv.content.personalInfo.name || "BRIAN R. BAXTER"}
+            </h1>
+            <h2 className="text-2xl text-gray-600 mt-2">
+              {cv.content.personalInfo.title || "GRAPHIC & WEB DESIGNER"}
+            </h2>
+          </div>
+
+          {/* About Me Section */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-4 border-b-2 border-yellow-500 pb-2">ABOUT ME</h2>
+            <p className="text-gray-600">
+              {cv.content.personalInfo.summary || "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."}
+            </p>
+          </div>
+
+          {/* Job Experience Section */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-4 border-b-2 border-yellow-500 pb-2">JOB EXPERIENCE</h2>
+            {cv.content.experience.map((exp: any, index: number) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-lg">{exp.position || "Senior Web Designer"}</h3>
+                  <span className="text-sm text-gray-500">{exp.startDate || "2020"} - {exp.endDate || "Present"}</span>
+                </div>
+                <p className="text-gray-600">{exp.company || "Creative Agency / Chicago"}</p>
+                <p className="text-sm text-gray-500">
+                  {exp.description || "Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type."}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Skills Section */}
+          <div>
+            <h2 className="text-2xl font-bold mb-4 border-b-2 border-yellow-500 pb-2">SKILLS</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {cv.content.skills.map((skill: any, index: number) => (
+                <div key={index}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>{skill.name || "Adobe Photoshop"}</span>
+                    <span>
+                      {skill.level === "Débutant" ? "25%" : 
+                       skill.level === "Intermédiaire" ? "50%" : 
+                       skill.level === "Avancé" ? "75%" : 
+                       skill.level === "Expert" ? "100%" : "75%"}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-2 rounded-full">
+                    <div 
+                      className="bg-yellow-500 h-2 rounded-full" 
+                      style={{ 
+                        width: skill.level === "Débutant" ? "25%" : 
+                               skill.level === "Intermédiaire" ? "50%" : 
+                               skill.level === "Avancé" ? "75%" : 
+                               skill.level === "Expert" ? "100%" : "75%" 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function NewModernTemplate({ cv }: { cv: any }) {
+  return (
+    <div className="min-h-screen font-sans p-8 relative bg-white">
+      {/* Background Decorative Circles */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#E6E6FA] rounded-bl-full opacity-50"></div>
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#E6E6FA] rounded-tr-full opacity-50"></div>
+
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        {/* Header Section */}
+        <div className="flex items-center p-8 border-b border-gray-200">
+          {/* Profile Photo */}
+          <div className="w-32 h-32 rounded-full overflow-hidden mr-8">
+            {cv.content.personalInfo.photo ? (
+              <Image 
+                src={cv.content.personalInfo.photo} 
+                alt="Profile Picture" 
+                width={128} 
+                height={128} 
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-3xl">
+                {cv.content.personalInfo.name ? cv.content.personalInfo.name.charAt(0) : "K"}
+              </div>
+            )}
+          </div>
+
+          {/* Name and Title */}
+          <div>
+            <h1 className="text-4xl font-bold text-gray-800">
+              {cv.content.personalInfo.name || "Karrin Zahra"}
+            </h1>
+            <h2 className="text-xl text-gray-600">
+              {cv.content.personalInfo.title || "Graphic Designer"}
+            </h2>
+
+            {/* Contact Information */}
+            <div className="mt-4 flex space-x-4">
+              <span>📱 {cv.content.personalInfo.phone || "+1 234 567 8900"}</span>
+              <span>✉️ {cv.content.personalInfo.email || "karrin.zahra@email.com"}</span>
+              <span>📍 {cv.content.personalInfo.address || "Your City, Country"}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-8 p-8">
+          {/* Left Column: About Me */}
+          <div className="col-span-1">
+            <h3 className="text-xl font-semibold mb-4 border-b-2 border-[#D2B48C] pb-2">ABOUT ME</h3>
+            <p className="text-gray-600 text-sm">
+              {cv.content.personalInfo.summary || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
+            </p>
+
+            {/* Languages */}
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold mb-4 border-b-2 border-[#D2B48C] pb-2">LANGUAGES</h3>
+              {cv.content.languages.map((lang: any, index: number) => (
+                <div key={index} className="mb-4">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>{lang.name || "Language"}</span>
+                    <span>
+                      {lang.level === "Débutant" ? "25%" : 
+                       lang.level === "Intermédiaire" ? "50%" : 
+                       lang.level === "Avancé" ? "75%" : 
+                       lang.level === "Bilingue" ? "100%" : "75%"}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-2 rounded-full">
+                    <div 
+                      className="bg-[#D2B48C] h-2 rounded-full" 
+                      style={{ 
+                        width: lang.level === "Débutant" ? "25%" : 
+                               lang.level === "Intermédiaire" ? "50%" : 
+                               lang.level === "Avancé" ? "75%" : 
+                               lang.level === "Bilingue" ? "100%" : "75%" 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column: Experience and Skills */}
+          <div className="col-span-2">
+            {/* Experience Section */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4 border-b-2 border-[#D2B48C] pb-2">EXPERIENCE</h3>
+              {cv.content.experience.map((exp: any, index: number) => (
+                <div key={index} className="mb-6 pl-4 relative">
+                  <div className="absolute left-0 top-1 w-3 h-3 bg-[#D2B48C] rounded-full"></div>
+                  <div className="flex justify-between">
+                    <h4 className="font-medium text-lg">{exp.position || "Job Position"}</h4>
+                    <span className="text-sm text-gray-500">
+                      {exp.startDate || "Start Date"} - {exp.endDate || "End Date"}
+                    </span>
+                  </div>
+                  <p className="text-gray-600">{exp.company || "Company Name"}</p>
+                  <p className="text-sm text-gray-500">
+                    {exp.description || "Job responsibilities and achievements"}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Skills Section */}
+            <div>
+              <h3 className="text-xl font-semibold mb-4 border-b-2 border-[#D2B48C] pb-2">SKILLS</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {cv.content.skills.map((skill: any, index: number) => (
+                  <div key={index} className="text-center">
+                    <div 
+                      className="mx-auto w-20 h-20 rounded-full border-4 border-[#D2B48C] flex items-center justify-center text-lg font-bold"
+                      style={{
+                        background: `conic-gradient(#D2B48C ${
+                          skill.level === "Débutant" ? "25%" : 
+                          skill.level === "Intermédiaire" ? "50%" : 
+                          skill.level === "Avancé" ? "75%" : 
+                          skill.level === "Expert" ? "100%" : "75%"
+                        } transparent 0deg)`
+                      }}
+                    >
+                      {skill.level === "Débutant" ? "25%" : 
+                       skill.level === "Intermédiaire" ? "50%" : 
+                       skill.level === "Avancé" ? "75%" : 
+                       skill.level === "Expert" ? "100%" : "75%"}
+                    </div>
+                    <p className="mt-2 text-sm">{skill.name || "Skill Name"}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media Icons */}
+        <div className="border-t border-gray-200 p-4 text-center">
+          <div className="flex justify-center space-x-4">
+            <a href="#" className="text-gray-600 hover:text-[#D2B48C]">🌐</a>
+            <a href="#" className="text-gray-600 hover:text-[#D2B48C]">🐦</a>
+            <a href="#" className="text-gray-600 hover:text-[#D2B48C]">📸</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
