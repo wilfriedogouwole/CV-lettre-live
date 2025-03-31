@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { fireConfetti } from '@/lib/confetti';
 import { createKanbanCard, deleteAllKanbanCards, deleteKanbanCard, getKanbanCards, updateKanbanCard } from '@/lib/kanban-actions';
 import { Loader2, MoreVertical } from "lucide-react";
 import { useEffect, useState } from 'react';
@@ -89,6 +90,9 @@ export default function DashboardContent() {
         title: "Succès",
         description: "Nouvelle candidature ajoutée"
       });
+
+      fireConfetti();
+
     } catch (error) {
       toast({
         title: "Erreur",
@@ -114,6 +118,8 @@ export default function DashboardContent() {
         title: "Succès",
         description: "La candidature a été modifiée"
       });
+      fireConfetti();
+
     } catch (error) {
       toast({
         title: "Erreur",
@@ -131,6 +137,8 @@ export default function DashboardContent() {
         title: "Succès",
         description: "La candidature a été supprimée"
       });
+      fireConfetti();
+
     } catch (error) {
       toast({
         title: "Erreur",
@@ -148,6 +156,8 @@ export default function DashboardContent() {
         title: "Succès",
         description: "Toutes les candidatures ont été supprimées"
       });
+      fireConfetti();
+
     } catch (error) {
       toast({
         title: "Erreur",
@@ -179,6 +189,8 @@ export default function DashboardContent() {
         title: "Succès",
         description: "Candidature mise à jour"
       });
+      fireConfetti();
+
     } catch (error) {
       toast({
         title: "Erreur",
