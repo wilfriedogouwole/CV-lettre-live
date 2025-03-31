@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { prisma } from '@/lib/prisma';
 import { createUser } from '@/lib/user-actions';
 import { auth, currentUser } from '@clerk/nextjs';
+import DashboardContent from './dashboard-content/page';
 
 export default async function DashboardPage() {
   const { userId } = auth();
@@ -60,6 +61,7 @@ export default async function DashboardPage() {
         <TabsList>
           <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
           <TabsTrigger value="documents">Documents récents</TabsTrigger>
+          <TabsTrigger value="applications">Candidatures</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <Overview 
@@ -75,7 +77,11 @@ export default async function DashboardPage() {
             applications={applications}
           />
         </TabsContent>
+        <DashboardContent/>
+
+
       </Tabs>
+     
     </>
   );
 }
