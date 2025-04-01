@@ -14,7 +14,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { fireConfetti } from '@/lib/confetti';
 import { createKanbanCard, deleteAllKanbanCards, deleteKanbanCard, getKanbanCards, updateKanbanCard } from '@/lib/kanban-actions';
-import { Loader2, MoreVertical } from "lucide-react";
+import { Copy, Loader2, MoreVertical } from "lucide-react";
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -24,7 +24,7 @@ interface Application {
   company: string;
   location: string;
   contractType: string;
-  status: 'wishlist' | 'applied' | 'followup' | 'interview';
+  status: 'wishlist' | 'applied' | 'followup' | 'interview' | 'finished';
   date: string;
 }
 
@@ -33,7 +33,9 @@ const columns = [
   { id: 'wishlist', title: 'Souhait', color: 'bg-gray-100' },
   { id: 'applied', title: "J'ai postulé", color: 'bg-green-100' },
   { id: 'followup', title: "J'ai relancé", color: 'bg-orange-100' },
-  { id: 'interview', title: "J'ai un entretien", color: 'bg-blue-100' }
+  { id: 'interview', title: "J'ai un entretien", color: 'bg-blue-100' },
+  { id: 'finished', title: "Procédure terminé", color: 'bg-red-400' }
+
 ];
 
 export default function DashboardContent() {
@@ -51,7 +53,7 @@ export default function DashboardContent() {
           company: card.company,
           location: card.location || "",
           contractType: card.contractType || "",
-          status: card.status as 'wishlist' | 'applied' | 'followup' | 'interview',
+          status: card.status as 'wishlist' | 'applied' | 'followup' | 'interview' | 'finished',
           date: new Date(card.date).toISOString().split('T')[0]
         })));
       } catch (error) {
@@ -69,7 +71,7 @@ export default function DashboardContent() {
     loadApplications();
   }, [toast]);
 
-  const handleNewCard = async (status: 'wishlist' | 'applied' | 'followup' | 'interview', data: any) => {
+  const handleNewCard = async (status: 'wishlist' | 'applied' | 'followup' | 'interview' | 'finished', data: any) => {
     try {
       const card = await createKanbanCard({
         ...data,
@@ -82,7 +84,7 @@ export default function DashboardContent() {
         company: card.company,
         location: card.location || "",
         contractType: card.contractType || "",
-        status: card.status as 'wishlist' | 'applied' | 'followup' | 'interview',
+        status: card.status as 'wishlist' | 'applied' | 'followup' | 'interview' | 'finished',
         date: new Date(card.date).toISOString().split('T')[0]
       }]);
 
@@ -97,6 +99,38 @@ export default function DashboardContent() {
       toast({
         title: "Erreur",
         description: "Impossible d'ajouter la candidature",
+        variant: "destructive"
+      });
+    }
+  };
+
+
+
+  const handleDuplicateCard = async (application: Application) => {
+    try {
+      const { id, date, ...cardData } = application;
+      const duplicatedCard = await createKanbanCard(cardData);
+
+      setApplications([...applications, {
+        id: duplicatedCard.id,
+        title: duplicatedCard.title,
+        company: duplicatedCard.company,
+        location: duplicatedCard.location || "",
+        contractType: duplicatedCard.contractType || "",
+        status: duplicatedCard.status as 'wishlist' | 'applied' | 'followup' | 'interview',
+        date: new Date(duplicatedCard.date).toISOString().split('T')[0]
+      }]);
+
+      toast({
+        title: "Succès",
+        description: "La candidature a été dupliquée"
+      });
+      
+      fireConfetti();
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de dupliquer la candidature",
         variant: "destructive"
       });
     }
@@ -176,7 +210,7 @@ export default function DashboardContent() {
 
     try {
       await updateKanbanCard(draggableId, {
-        status: destination.droppableId as 'wishlist' | 'applied' | 'followup' | 'interview'
+        status: destination.droppableId as 'wishlist' | 'applied' | 'followup' | 'interview' | 'finished'
       });
 
       const newApplications = Array.from(applications);
@@ -212,7 +246,7 @@ export default function DashboardContent() {
     <>
           <TabsContent value="applications" className="space-y-4">
             <DragDropContext onDragEnd={onDragEnd}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
                 {columns.map(column => (
                   <div key={column.id} className={`${column.color} rounded-lg p-4`}>
                     <div className="flex items-center justify-between mb-4">
@@ -270,8 +304,8 @@ export default function DashboardContent() {
                                     >
                                       <Card className="bg-white hover:shadow-md transition-shadow">
                                         <CardHeader className="p-3">
-                                          <CardTitle className="text-sm font-medium">📄 POSTE : {application.title}</CardTitle>
-                                          <p className="text-sm text-gray-500">📄 ENTREPRISE : {application.company}</p>
+                                          <CardTitle className="text-sm font-medium">🧑🏻‍💼 POSTE : {application.title}</CardTitle>
+                                          <p className="text-sm text-gray-500">🏢 ENTREPRISE : {application.company}</p>
                                         </CardHeader>
                                         <CardContent className="p-3 pt-0">
                                           <div className="space-y-1">
@@ -284,6 +318,17 @@ export default function DashboardContent() {
                                             <div className="flex justify-between items-center mt-2">
                                               <p className="text-xs text-gray-400">{application.date}</p>
                                               <div className="flex items-center space-x-2">
+                                              <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDuplicateCard(application);
+                                                  }}
+                                                  className="text-xs text-blue-500 hover:text-blue-700 transition-colors"
+                                                >
+                                                  <Copy className="h-3 w-4" />
+                                                </button>
+
+
                                                 <EditCardDialog
                                                   card={application}
                                                   onSubmit={handleEditCard}
@@ -293,7 +338,7 @@ export default function DashboardContent() {
                                                     e.stopPropagation();
                                                     handleDeleteCard(application.id);
                                                   }}
-                                                  className="text-xs text-red-400 hover:text-blue-600 transition-colors"
+                                                  className="text-xs text-red-800 hover:text-blue-600 transition-colors"
                                                 >
                                                   Supprimer
                                                 </button>

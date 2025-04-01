@@ -2,6 +2,7 @@ import { Footer } from '@/components/footer/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
+import { frFR } from '@clerk/localizations'; // <-- Correction ici
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -20,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={frFR}>
       <html lang="fr" suppressHydrationWarning>
         <body className={inter.className}>
           <ThemeProvider
