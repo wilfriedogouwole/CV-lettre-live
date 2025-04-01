@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FilePenLine, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 interface EditCardDialogProps {
@@ -60,9 +60,9 @@ export function EditCardDialog({ card, onSubmit }: EditCardDialogProps) {
             e.stopPropagation();
             setIsOpen(true);
           }}
-          className="text-xs text-orange-500 hover:text-orange-700 transition-colors"
-        >
-          <FilePenLine className="h-3 w-3" />
+          className="text-xs text-orange-600 hover:text-orange-700 transition-colors"
+        >Modifier
+         {/* <FilePenLine className="h-3 w-3" />*/}
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

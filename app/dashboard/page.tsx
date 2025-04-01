@@ -54,7 +54,7 @@ export default async function DashboardPage() {
     <>
       <DashboardHeader
         heading="Tableau de bord"
-        text="Gérez vos CV et lettres de motivation"
+        text="Gérez vos Cv's, Lettres de motivation et Candidatures"
       />
       
       <Tabs defaultValue="overview" className="space-y-4">

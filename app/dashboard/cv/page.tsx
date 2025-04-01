@@ -1,25 +1,58 @@
 "use client"
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCVs } from '@/hooks/use-cvs';
+import { toast } from '@/hooks/use-toast';
+import { deleteCV } from '@/lib/cv-actions';
+import { templates } from '@/lib/templates';
+import { CV } from '@prisma/client';
+import confetti from 'canvas-confetti';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-import { FileText, Loader2, PlusCircle } from 'lucide-react';
+import { FileText, Loader2, PlusCircle, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+
 export default function CVPage() {
   const router = useRouter();
-  const { cvs, isLoading } = useCVs();
+  const { cvs, isLoading,mutate } = useCVs();
   const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
   const handleCreateCV = () => {
     setIsCreating(true);
     router.push('/dashboard/cv/templates');
   };
+
+
+  const handleDeleteCV = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      await deleteCV(id);
+      mutate(cvs.filter(cv => cv.id !== id));
+      toast({
+        title: "CV supprimé",
+        description: "Le CV a été supprimé avec succès"
+      });
+      confetti();
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le CV",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
 
   const container = {
     hidden: { opacity: 0 },
@@ -94,17 +127,22 @@ export default function CVPage() {
         </Card>
       ) : (
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           variants={container}
           initial="hidden"
           animate="show"
         >
-          {cvs.map((cv) => (
-            <motion.div key={cv.id} variants={item}>
-              <Link href={`/dashboard/cv/${cv.id}`}>
+   {cvs.map((cv: CV) => {
+            const currentTemplate = templates[cv.templateId as keyof typeof templates] || templates.template1;
+  
+            return (            <motion.div key={cv.id} variants={item}>
                 <Card className="h-full cursor-pointer hover:shadow-md transition-shadow">
+                
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-xl">{cv.title}</CardTitle>
+                  <Link href={`/dashboard/cv/${cv.id}`}>
+                    <CardTitle className="text-xl hover:text-red-500">{cv.title}</CardTitle>
+                    </Link>
+
                     <CardDescription>
                       {cv.jobPosition && cv.company 
                         ? `${cv.jobPosition} - ${cv.company}`
@@ -112,18 +150,64 @@ export default function CVPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center text-sm text-muted-foreground">
+                    <div className="flex items-center relative text-sm text-muted-foreground">
                       <FileText className="mr-2 h-4 w-4" />
-                      <span>Modèle: Template {cv.templateId}</span>
+                      <span>Modèle:{currentTemplate.name + " "}</span>
+                      <div className="aspect-[4/3] absolute top-4 right-0 overflow-hidden">
+                     <Image
+                        src={currentTemplate.thumbnail}
+                        alt={`Aperçu du CV ${cv.title}`}
+                      width={90}
+                      height={90}
+                      className=" rounded-lg object-cover"
+                    />
+                  </div>
                     </div>
                   </CardContent>
                   <CardFooter className="text-xs text-muted-foreground">
                     Mis à jour {formatDistanceToNow(new Date(cv.updatedAt), { addSuffix: true, locale: fr })}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Cette action ne peut pas être annulée. Le CV sera définitivement supprimé.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteCV(cv.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeleting}
+                          >
+                            {isDeleting ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Suppression...
+                              </>
+                            ) : (
+                              "Supprimer"
+                            )}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </CardFooter>
                 </Card>
-              </Link>
+              
             </motion.div>
-          ))}
+          );
+        })}
         </motion.div>
       )}
     </div>

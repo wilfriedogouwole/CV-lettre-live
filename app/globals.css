@@ -211,3 +211,43 @@
     page-break-inside: avoid;
   }
 }
+
+.cl-formButtonPrimary {
+  font-size: 14px;
+  text-transform: none;
+  background-color: #611bbd;
+}
+
+.cl-formButtonPrimary:hover,
+.cl-formButtonPrimary:focus,
+.cl-formButtonPrimary:active {
+  background-color: #49247a;
+}
+
+.cl-internal-vqjo9j {
+  display: flex
+  ;
+      align-items: center !important;
+      justify-content: center;}
+
+.cl-internal-1vbdq0x {
+  display: flex!important;
+  justify-content: center !important;;
+}
+
+
+.cl-internal-19xp6v9 {
+  display: flex;
+  align-items: center;
+
+}
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+  text-align: center;
+}
+
+.bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: #77ecf3;
+}

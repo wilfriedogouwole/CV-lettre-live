@@ -9,7 +9,7 @@ interface KanbanCardData {
   company: string;
   location?: string;
   contractType?: string;
-  status: 'wishlist' | 'applied' | 'followup' | 'interview';
+  status: 'wishlist' | 'applied' | 'followup' | 'interview' | 'finished';
 }
 
 export async function getKanbanCards() {
