@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const templates = [
   {
@@ -42,14 +42,13 @@ const templates = [
     name: "Moderne",
     description: "Un design audacieux avec une mise en page originale",
     thumbnail: "/images/cv4.jpg"
-  }
-  ,
-    {
-      title: "Template nouveau",
-      name: "nouveau",
-      description: "Un design avec une mise en page en deux colonnes",
-      thumbnail: "/images/cv2.jpg"
-    },
+  },
+  {
+    title: "Template nouveau",
+    name: "nouveau",
+    description: "Un design avec une mise en page en deux colonnes",
+    thumbnail: "/images/cv2.jpg"
+  },
 ];
 
 export default function CVTemplatesPage() {
@@ -60,6 +59,13 @@ export default function CVTemplatesPage() {
   const [jobPosition, setJobPosition] = useState("");
   const [company, setCompany] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const infoSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedTemplate && infoSectionRef.current) {
+      infoSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedTemplate]);
 
   const handleCreateCV = async () => {
     if (!selectedTemplate) {
@@ -136,6 +142,12 @@ export default function CVTemplatesPage() {
     show: { opacity: 1, y: 0 }
   };
 
+  const handleTemplateSelect = (templateId: string | undefined) => {
+    if (templateId) {
+      setSelectedTemplate(templateId);
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8">
@@ -159,7 +171,7 @@ export default function CVTemplatesPage() {
                   ? "ring-2 ring-primary" 
                   : "hover:shadow-md"
               }`}
-              onClick={() => setSelectedTemplate((template.id ?? null))}
+              onClick={() => handleTemplateSelect(template.id)}
             >
               <CardHeader className="pb-2">
                 <CardTitle>{template.name}</CardTitle>
@@ -180,7 +192,7 @@ export default function CVTemplatesPage() {
                 <Button 
                   variant={selectedTemplate === template.id ? "default" : "outline"}
                   className="w-full"
-                  onClick={() => setSelectedTemplate((template.id ?? null))}
+                  onClick={() => handleTemplateSelect(template.id)}
                 >
                   {selectedTemplate === template.id ? "Sélectionné" : "Sélectionner"}
                 </Button>
@@ -190,59 +202,61 @@ export default function CVTemplatesPage() {
         ))}
       </motion.div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informations du CV</CardTitle>
-          <CardDescription>
-            Entrez les informations de base pour votre CV
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Titre du CV *</Label>
-            <Input 
-              id="title" 
-              placeholder="Ex: CV Développeur Web" 
-              value={cvTitle}
-              onChange={(e) => setCvTitle(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="position">Poste visé</Label>
-            <Input 
-              id="position" 
-              placeholder="Ex: Développeur Frontend" 
-              value={jobPosition}
-              onChange={(e) => setJobPosition(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="company">Entreprise</Label>
-            <Input 
-              id="company" 
-              placeholder="Ex: Acme Inc." 
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button 
-            onClick={handleCreateCV} 
-            disabled={!selectedTemplate || !cvTitle || isCreating}
-            className="w-full"
-          >
-            {isCreating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Création en cours...
-              </>
-            ) : (
-              "Créer mon CV"
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
+      <div ref={infoSectionRef}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Informations du CV</CardTitle>
+            <CardDescription>
+              Entrez les informations de base pour votre CV
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Titre du CV *</Label>
+              <Input 
+                id="title" 
+                placeholder="Ex: CV Développeur Web" 
+                value={cvTitle}
+                onChange={(e) => setCvTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="position">Poste visé</Label>
+              <Input 
+                id="position" 
+                placeholder="Ex: Développeur Frontend" 
+                value={jobPosition}
+                onChange={(e) => setJobPosition(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="company">Entreprise</Label>
+              <Input 
+                id="company" 
+                placeholder="Ex: Acme Inc." 
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button 
+              onClick={handleCreateCV} 
+              disabled={!selectedTemplate || !cvTitle || isCreating}
+              className="w-full"
+            >
+              {isCreating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Création en cours...
+                </>
+              ) : (
+                "Créer mon CV"
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

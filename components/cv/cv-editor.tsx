@@ -237,6 +237,104 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
     });
   };
 
+  const addReference = () => {
+    onUpdateCV({
+      content: {
+        ...cv.content,
+        references: [
+          ...(cv.content.references || []),
+          {
+            id: Date.now().toString(),
+            name: "",
+            title: "",
+            company: "",
+            email: "",
+            phone: ""
+          }
+        ]
+      }
+    });
+  };
+
+  const updateReference = (index: number, field: string, value: string) => {
+    const updatedReferences = [...(cv.content.references || [])];
+    updatedReferences[index] = {
+      ...updatedReferences[index],
+      [field]: value
+    };
+
+    onUpdateCV({
+      content: {
+        ...cv.content,
+        references: updatedReferences
+      }
+    });
+  };
+
+  const removeReference = (index: number) => {
+    const updatedReferences = [...(cv.content.references || [])];
+    updatedReferences.splice(index, 1);
+
+    onUpdateCV({
+      content: {
+        ...cv.content,
+        references: updatedReferences
+      }
+    });
+  };
+
+
+  const addHobbit = () => {
+    onUpdateCV({
+      content: {
+        ...cv.content,
+        interests: [
+          ...(cv.content.interests || []),
+          {
+            id: Date.now().toString(),
+            name: ""
+          }
+        ]
+      }
+    });
+  };
+
+
+  
+  const updateHobbit = (index: number, field: string, value: string) => {
+    const updateHobbit = [...(cv.content.interests || [])];
+    updateHobbit[index] = {
+      ...updateHobbit[index],
+      [field]: value
+    };
+
+    onUpdateCV({
+      content: {
+        ...cv.content,
+        interests: updateHobbit
+      }
+    });
+  };
+
+  const removeHobbit = (index: number) => {
+    const updatedHobbit = [...(cv.content.interests || [])];
+    updatedHobbit.splice(index, 1);
+
+    onUpdateCV({
+      content: {
+        ...cv.content,
+        interests: updatedHobbit
+      }
+    });
+  };
+
+
+
+
+
+
+
+
   return (
     <div className="space-y-6">
       <Card>
@@ -277,12 +375,16 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5">
-          <TabsTrigger value="personal">Informations personnelles</TabsTrigger>
+        <TabsList className="grid grid-cols-2 md:grid-cols-7">
+          <TabsTrigger value="personal">Profil</TabsTrigger>
           <TabsTrigger value="education">Formation</TabsTrigger>
           <TabsTrigger value="experience">Expérience</TabsTrigger>
           <TabsTrigger value="skills">Compétences</TabsTrigger>
           <TabsTrigger value="languages">Langues</TabsTrigger>
+          <TabsTrigger value="references">Références</TabsTrigger>
+          <TabsTrigger value="interests">Centre d&apos;intéret</TabsTrigger>
+
+
         </TabsList>
 
         <TabsContent value="personal" className="space-y-4">
@@ -661,6 +763,142 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
                     </div>
                   ))}
                 </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="references" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle>Références</CardTitle>
+                <CardDescription>
+                  Ajoutez des personnes qui peuvent recommander votre travail
+                </CardDescription>
+              </div>
+              <Button onClick={addReference} variant="outline" size="sm">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Ajouter
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {(!cv.content.references || cv.content.references.length === 0) ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Aucune référence ajoutée. Cliquez sur &apos;Ajouter&apos; pour commencer.
+                </p>
+              ) : (
+                cv.content.references.map((reference: any, index: number) => (
+                  <div key={reference.id} className="space-y-4 border-b pb-6 last:border-0">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium">Référence {index + 1}</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => removeReference(index)}
+                        className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom complet</Label>
+                        <Input 
+                          value={reference.name || ''}
+                          onChange={(e) => updateReference(index, 'name', e.target.value)}
+                          placeholder="Ex: Jean Dupont"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Titre / Poste</Label>
+                        <Input 
+                          value={reference.title || ''}
+                          onChange={(e) => updateReference(index, 'title', e.target.value)}
+                          placeholder="Ex: Directeur Technique"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Entreprise</Label>
+                        <Input 
+                          value={reference.company || ''}
+                          onChange={(e) => updateReference(index, 'company', e.target.value)}
+                          placeholder="Ex: Acme Inc."
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        
+                        <Input 
+                          type="email"
+                          value={reference.email || ''}
+                          onChange={(e) => updateReference(index, 'email', e.target.value)}
+                          placeholder="Ex: jean.dupont@email.com"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Téléphone</Label>
+                        <Input 
+                          value={reference.phone || ''}
+                          onChange={(e) => updateReference(index, 'phone', e.target.value)}
+                          placeholder="Ex: +33 6 12 34 56 78"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        
+        <TabsContent value="interests" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle>Hobbits</CardTitle>
+                <CardDescription>
+                  Ajoutez vos Centres d&apos;intérets
+                </CardDescription>
+              </div>
+              <Button onClick={addHobbit} variant="outline" size="sm">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Ajouter
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {(!cv.content.interests || cv.content.interests.length === 0) ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Aucun hobbit ajouté. Cliquez sur &apos;Ajouter&apos; pour commencer.
+                </p>
+              ) : (
+                cv.content.interests.map((interests: any, index: number) => (
+                  <div key={interests.id} className="space-y-4 border-b pb-6 last:border-0">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium">Hobbit {index + 1}</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => removeHobbit(index)}
+                        className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nom du Hobbit </Label>
+                        <Input 
+                          value={interests.name|| ''}
+                          onChange={(e) => updateHobbit(index, 'name', e.target.value)}
+                          placeholder="Ex: Voyage"
+                        />
+                      </div>
+                    
+                    </div>
+                  </div>
+                ))
               )}
             </CardContent>
           </Card>
