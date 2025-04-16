@@ -1,6 +1,6 @@
 // Fonction de génération de lettre de motivation sans utiliser l'API OpenAI
 // Utilise des modèles prédéfinis à la place
-
+/*
 export async function generateCoverLetter(params: {
   jobPosition: string;
   company: string;
@@ -87,5 +87,69 @@ ${candidateName}
   } catch (error) {
     console.error("Erreur lors de la génération de la lettre de motivation:", error);
     throw new Error("Impossible de générer la lettre de motivation. Veuillez réessayer plus tard.");
+  }
+}*/
+"use server"
+
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+interface GenerateLetterParams {
+  jobPosition: string;
+  company: string;
+  candidateName: string;
+  candidateExperience: string;
+  candidateSkills: string;
+}
+
+export async function generateCoverLetter(params: GenerateLetterParams) {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OpenAI API key is not configured");
+  }
+
+  const { jobPosition, company, candidateName, candidateExperience, candidateSkills } = params;
+
+  try {
+    const prompt = `Write a professional cover letter in French for a ${jobPosition} position at ${company}.
+
+Candidate Information:
+- Name: ${candidateName}
+- Experience: ${candidateExperience}
+- Skills: ${candidateSkills}
+
+The letter should:
+- Be formal and professional
+- Follow French business letter format
+- Highlight relevant experience and skills
+- Show enthusiasm for the role and company
+- Be around 300-400 words
+- Include a proper greeting and closing
+- Be written in French`;
+
+    const completion = await openai.chat.completions.create({
+      /*model: "gpt-4-turbo-preview",*/
+      model:"gpt-4o-mini",
+
+      messages: [
+        {
+          role: "system",
+          content: "You are a professional cover letter writer with expertise in French business correspondence."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 1000
+    });
+
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.error("Error generating cover letter:", error);
+    throw new Error("Failed to generate cover letter");
   }
 }
