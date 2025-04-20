@@ -15,37 +15,37 @@ export default function CVTemplatesPage() {
       title: "Template Élégant",
       description: "Un design épuré avec une mise en page moderne et élégante",
       features: ["Design professionnel", "Mise en page claire", "Sections bien structurées"],
-      image: "/images/cv1.jpg"
+      image: "/images/nouveau_style1.jpg"
     },
     {
       title: "Template Créatif",
       description: "Un design contemporain avec des éléments graphiques modernes",
       features: ["Design unique", "Mise en page créative", "Sections personnalisables"],
-      image: "/images/cv3.jpg"
+      image: "/images/nouveau_style1.jpg"
     },
     {
       title: "Template Minimaliste",
       description: "Un design simple et efficace qui met en valeur votre contenu",
       features: ["Design minimaliste", "Mise en page épurée", "Focus sur le contenu"],
-      image: "/images/cv5.jpg"
+      image: "/images/nouveau_style1.jpg"
     },
     {
       title: "Template Professionnel",
       description: "Un design structuré idéal pour les profils expérimentés",
       features: ["Design classique", "Mise en page traditionnelle", "Sections complètes"],
-      image: "/images/cv2.jpg"
+      image: "/images/Moderne.jpg"
     },
     {
       title: "Template Moderne",
       description: "Un design audacieux avec une mise en page originale",
       features: ["Design moderne", "Mise en page innovante", "Sections dynamiques"],
-      image: "/images/cv4.jpg"
+      image: "/images/Moderne.jpg"
     },
     {
       title: "Template nouveau",
       description: "Un design professionnel avec une mise en page en deux colonnes",
       features: ["Design moderne", "Mise en page innovante", "Sections dynamiques"],
-      image: "/images/cv2.jpg"
+      image: "/images/Moderne.jpg"
     },
 
   ];
