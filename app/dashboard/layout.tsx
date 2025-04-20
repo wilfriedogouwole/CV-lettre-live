@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs';
 import { DashboardNav } from '@/components/dashboard/dashboard-nav';
 import DashboardShell from '@/components/dashboard/dashboard-shell';
 
@@ -8,11 +6,11 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = auth();
+  /*const { userId } = auth();
   
   if (!userId) {
     redirect('/sign-in');
-  }
+  }*/
 
   return (
     <DashboardShell>

@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { prisma } from '@/lib/prisma';
 import { createUser } from '@/lib/user-actions';
 import { auth, currentUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import DashboardContent from './dashboard-content/page';
 
 export default async function DashboardPage() {
@@ -12,7 +13,9 @@ export default async function DashboardPage() {
   const user = await currentUser();
   
   if (!userId || !user) {
-    return null; // Layout will handle redirect
+    redirect('/sign-in');
+
+    /*return null; // Layout will handle redirect*/
   }
 
   // Create or update user in database

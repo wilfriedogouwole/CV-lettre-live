@@ -1,58 +1,35 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Calendar, FileText, PenLine, Send } from "lucide-react";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import React from "react";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const data = [
-  {
-    name: "Jan",
-    total: 2,
-  },
-  {
-    name: "Fév",
-    total: 3,
-  },
-  {
-    name: "Mar",
-    total: 1,
-  },
-  {
-    name: "Avr",
-    total: 4,
-  },
-  {
-    name: "Mai",
-    total: 2,
-  },
-  {
-    name: "Juin",
-    total: 5,
-  },
-  {
-    name: "Juil",
-    total: 3,
-  },
-  {
-    name: "Août",
-    total: 1,
-  },
-  {
-    name: "Sep",
-    total: 4,
-  },
-  {
-    name: "Oct",
-    total: 2,
-  },
-  {
-    name: "Nov",
-    total: 5,
-  },
-  {
-    name: "Dec",
-    total: 5,
-  },
+  { name: "Jan", total: 2 },
+  { name: "Fév", total: 3 },
+  { name: "Mar", total: 1 },
+  { name: "Avr", total: 4 },
+  { name: "Mai", total: 2 },
+  { name: "Juin", total: 5 },
+  { name: "Juil", total: 3 },
+  { name: "Août", total: 1 },
+  { name: "Sep", total: 4 },
+  { name: "Oct", total: 2 },
+  { name: "Nov", total: 5 },
+  { name: "Dec", total: 5 },
 ];
 
 interface OverviewProps {
@@ -61,7 +38,21 @@ interface OverviewProps {
   applicationCount: number;
 }
 
-export function Overview({ cvCount, letterCount, applicationCount }: OverviewProps) {
+export function Overview({
+  cvCount,
+  letterCount,
+  applicationCount,
+}: OverviewProps) {
+  const [cvDelta, setCvDelta] = React.useState<number | null>(null);
+  const [letterDelta, setLetterDelta] = React.useState<number | null>(null);
+  const [appDelta, setAppDelta] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    setCvDelta(Math.floor(Math.random() * 5) + 1);
+    setLetterDelta(Math.floor(Math.random() * 3) + 1);
+    setAppDelta(Math.floor(Math.random() * 4) + 1);
+  }, []);
+
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
@@ -72,10 +63,11 @@ export function Overview({ cvCount, letterCount, applicationCount }: OverviewPro
         <CardContent>
           <div className="text-2xl font-bold">{cvCount}</div>
           <p className="text-xs text-muted-foreground">
-            +{Math.floor(Math.random() * 5) + 1} depuis le mois dernier
+            {cvDelta !== null && `+${cvDelta} depuis le mois dernier`}
           </p>
         </CardContent>
       </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Lettres créées</CardTitle>
@@ -84,10 +76,11 @@ export function Overview({ cvCount, letterCount, applicationCount }: OverviewPro
         <CardContent>
           <div className="text-2xl font-bold">{letterCount}</div>
           <p className="text-xs text-muted-foreground">
-            +{Math.floor(Math.random() * 3) + 1} depuis le mois dernier
+            {letterDelta !== null && `+${letterDelta} depuis le mois dernier`}
           </p>
         </CardContent>
       </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Candidatures envoyées</CardTitle>
@@ -96,10 +89,11 @@ export function Overview({ cvCount, letterCount, applicationCount }: OverviewPro
         <CardContent>
           <div className="text-2xl font-bold">{applicationCount}</div>
           <p className="text-xs text-muted-foreground">
-            +{Math.floor(Math.random() * 4) + 1} depuis le mois dernier
+            {appDelta !== null && `+${appDelta} depuis le mois dernier`}
           </p>
         </CardContent>
       </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Dernière activité</CardTitle>
@@ -108,10 +102,11 @@ export function Overview({ cvCount, letterCount, applicationCount }: OverviewPro
         <CardContent>
           <div className="text-2xl font-bold">Aujourd&apos;hui</div>
           <p className="text-xs text-muted-foreground">
-            {new Date().toLocaleDateString('fr-FR')}
+            {new Date().toLocaleDateString("fr-FR")}
           </p>
         </CardContent>
       </Card>
+
       <Card className="col-span-1 sm:col-span-2 lg:col-span-4">
         <CardHeader>
           <CardTitle>Activité</CardTitle>
