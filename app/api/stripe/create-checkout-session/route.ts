@@ -3,6 +3,8 @@ import { stripe } from "@/lib/stripe";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+
 const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000" || "https://cvmaster.derrickogouwole.fr/";
 
 const PLANS = {
@@ -23,6 +25,7 @@ const PLANS = {
     }
   }
 };
+
 
 export async function POST(request: Request) {
   try {
@@ -123,9 +126,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
