@@ -3,15 +3,21 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  throw new Error("STRIPE_WEBHOOK_SECRET must be defined in your environment variables");
-}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+export const dynamic = 'force-dynamic'; // ⬅️ AJOUTE CECI
+
+
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
+
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    throw new Error("STRIPE_WEBHOOK_SECRET must be defined in your environment variables");
+  }
+  
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
   try {
     const body = await request.text();
     const signature = headers().get("Stripe-Signature")!;

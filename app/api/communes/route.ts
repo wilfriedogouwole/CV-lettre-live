@@ -5,6 +5,9 @@ import { NextResponse } from "next/server";
 const API_KEY = process.env.POLE_EMPLOI_CLIENT_ID!;
 const API_SECRET = process.env.POLE_EMPLOI_CLIENT_SECRET!;
 
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // 🔐 1. Récupération du token OAuth2
