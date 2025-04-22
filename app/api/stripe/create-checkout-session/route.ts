@@ -28,6 +28,10 @@ const PLANS = {
 
 
 export async function POST(request: Request) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY manquant dans .env");
+  }
+
   try {
     const { userId } = auth();
     if (!userId) {

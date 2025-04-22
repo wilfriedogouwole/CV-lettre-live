@@ -23,9 +23,14 @@ COPY . .
 
 # Ajouter des arguments de build pour DATABASE_URL
 ARG DATABASE_URL
+ARG DATABASE_URL
+ARG STRIPE_SECRET_KEY
+ARG STRIPE_WEBHOOK_SECRET
 
 # Utiliser l'ARG dans votre configuration Prisma
-ENV DATABASE_URL=$DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL \
+    STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY \
+    NEXTAUTH_SECRET="default-secret-for-build" 
 
 # Générer le client Prisma
 RUN npx prisma generate
