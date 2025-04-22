@@ -3,7 +3,11 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  throw new Error("STRIPE_WEBHOOK_SECRET must be defined in your environment variables");
+}
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export const runtime = 'nodejs';
 
