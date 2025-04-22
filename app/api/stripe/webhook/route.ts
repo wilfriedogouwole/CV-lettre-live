@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     const body = await request.text();
@@ -156,9 +158,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
