@@ -48,18 +48,18 @@ jobs:
           push: true
           tags: derrick93/cvdocker:v1
           build-args: |
-            COMMIT_SHA=${{ github.sha }} \
-            APP_ENV=${{ secrets.APP_ENV }} \
-            DATABASE_URL=${{secrets.DATABASE_URL}} \ # Ajoutez cette ligne
+            COMMIT_SHA=${{ github.sha }} 
+            APP_ENV=${{ secrets.APP_ENV }} 
+            DATABASE_URL=${{secrets.DATABASE_URL}}  # Ajoutez cette ligne
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}} \
-            CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}} \
-            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
-            POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}} \
-            POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} \
-            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}} \
-            STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY}} \
-            STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET}} \
-            NEXT_PUBLIC_APP_URL=${{secrets.NEXT_PUBLIC_APP_URL}} \
+            CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}}
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}}
+            POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}}
+            POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} 
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}} 
+            STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY}} 
+            STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET}} 
+            NEXT_PUBLIC_APP_URL=${{secrets.NEXT_PUBLIC_APP_URL}} 
 
 
 
@@ -74,18 +74,18 @@ jobs:
           push: true
           tags: derrick93/cvdocker:v2
           build-args: |
-            COMMIT_SHA=${{ github.sha }} \
-            APP_ENV=${{ secrets.APP_ENV }} \
-            DATABASE_URL=${{secrets.DATABASE_URL}} \ # Ajoutez cette ligne
-            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}} \
-            CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}} \
-            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+            COMMIT_SHA=${{ github.sha }} 
+            APP_ENV=${{ secrets.APP_ENV }} 
+            DATABASE_URL=${{secrets.DATABASE_URL}} # Ajoutez cette ligne
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}} 
+            CLERK_SECRET_KEY=${{secrets.CLERK_SECRET_KEY}} 
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} 
             POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}} \
             POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} \
-            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}} \
-            STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY}} \
-            STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET}} \
-            NEXT_PUBLIC_APP_URL=${{secrets.NEXT_PUBLIC_APP_URL}} \
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}} 
+            STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY}} 
+            STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET}} 
+            NEXT_PUBLIC_APP_URL=${{secrets.NEXT_PUBLIC_APP_URL}} 
 
 
           cache-from: type=local,src=/tmp/.buildx-cache
