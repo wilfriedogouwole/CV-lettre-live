@@ -27,15 +27,21 @@ export async function createCV(data: CVData) {
   }
 
   try {
-    // Vérifier si l'utilisateur existe dans la base de données
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
+    // Vérifier les crédits
+    const credits = await prisma.credits.findUnique({
+      where: { userId }
     });
 
-    if (!user) {
-      throw new Error('Utilisateur non trouvé');
+    if (!credits) {
+      throw new Error('Crédits non trouvés');
     }
 
+    // Si les crédits ne sont pas illimités (-1) et sont épuisés
+    if (credits.cvCredits !== -1 && credits.cvCredits <= 0) {
+      throw new Error('Crédits CV insuffisants');
+    }
+
+    // Créer le CV
     const cv = await prisma.cV.create({
       data: {
         title: data.title,
@@ -46,6 +52,16 @@ export async function createCV(data: CVData) {
         userId
       }
     });
+
+    // Décrémenter les crédits si pas illimités
+    if (credits.cvCredits !== -1) {
+      await prisma.credits.update({
+        where: { userId },
+        data: {
+          cvCredits: credits.cvCredits - 1
+        }
+      });
+    }
 
     revalidatePath('/dashboard/cv');
     return cv;

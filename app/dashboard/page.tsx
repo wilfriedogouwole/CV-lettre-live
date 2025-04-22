@@ -1,3 +1,4 @@
+import { CreditDisplay } from '@/components/credits/credit-display';
 import DashboardHeader from '@/components/dashboard/dashboard-header';
 import { Overview } from '@/components/dashboard/overview';
 import { RecentDocuments } from '@/components/dashboard/recent-documents';
@@ -81,9 +82,9 @@ export default async function DashboardPage() {
           />
         </TabsContent>
         <DashboardContent/>
-
-
       </Tabs>
+
+      <CreditDisplay/>
      
     </>
   );
