@@ -47,6 +47,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!plan.priceId) {
+      return NextResponse.json(
+        { error: "Price ID not configured" },
+        { status: 500 }
+      );
+    }
+
     // Get or create Stripe customer
     let subscription = await prisma.subscription.findUnique({
       where: { userId }
