@@ -28,15 +28,21 @@ export async function createCoverLetter(data: CoverLetterData) {
   }
 
   try {
-    // Vérifier si l'utilisateur existe dans la base de données
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
+    // Vérifier les crédits
+    const credits = await prisma.credits.findUnique({
+      where: { userId }
     });
 
-    if (!user) {
-      throw new Error('Utilisateur non trouvé');
+    if (!credits) {
+      throw new Error('Crédits non trouvés');
     }
 
+    // Si les crédits ne sont pas illimités (-1) et sont épuisés
+    if (credits.letterCredits !== -1 && credits.letterCredits <= 0) {
+      throw new Error('Crédits lettres de motivation insuffisants');
+    }
+
+    // Créer la lettre
     const letter = await prisma.coverLetter.create({
       data: {
         title: data.title,
@@ -47,6 +53,16 @@ export async function createCoverLetter(data: CoverLetterData) {
         userId
       }
     });
+
+    // Décrémenter les crédits si pas illimités
+    if (credits.letterCredits !== -1) {
+      await prisma.credits.update({
+        where: { userId },
+        data: {
+          letterCredits: credits.letterCredits - 1
+        }
+      });
+    }
 
     revalidatePath('/dashboard/letters');
     return letter;

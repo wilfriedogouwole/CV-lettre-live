@@ -56,6 +56,10 @@ jobs:
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}} \
             POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} \
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}} \
+            STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY}} \
+            STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET}} \
+            NEXT_PUBLIC_APP_URL=${{secrets.NEXT_PUBLIC_APP_URL}} \
 
 
 
@@ -78,6 +82,11 @@ jobs:
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
             POLE_EMPLOI_CLIENT_SECRET=${{secrets.POLE_EMPLOI_CLIENT_SECRET}} \
             POLE_EMPLOI_CLIENT_ID=${{secrets.POLE_EMPLOI_CLIENT_ID}} \
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}} \
+            STRIPE_SECRET_KEY=${{secrets.STRIPE_SECRET_KEY}} \
+            STRIPE_WEBHOOK_SECRET=${{secrets.STRIPE_WEBHOOK_SECRET}} \
+            NEXT_PUBLIC_APP_URL=${{secrets.NEXT_PUBLIC_APP_URL}} \
+
 
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
