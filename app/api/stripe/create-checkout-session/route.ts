@@ -3,10 +3,10 @@ import { stripe } from "@/lib/stripe";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
-export const runtime = 'nodejs';
-
 const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000" || "https://cvmaster.derrickogouwole.fr/";
 
+
+// Configuration des plans disponibles
 const PLANS = {
   standard: {
     name: "Standard",
@@ -26,57 +26,53 @@ const PLANS = {
   }
 };
 
-
 export async function POST(request: Request) {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error("STRIPE_SECRET_KEY manquant dans .env");
-  }
-
   try {
+    // Authentification de l'utilisateur
     const { userId } = auth();
     if (!userId) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "Non autorisé" },
         { status: 401 }
       );
     }
 
+    // Récupérer l'ID du plan choisi depuis la requête
     const { priceId } = await request.json();
     const plan = PLANS[priceId as keyof typeof PLANS];
 
+    // Vérifier que le plan existe
     if (!plan) {
       return NextResponse.json(
-        { error: "Invalid plan" },
+        { error: "Plan invalide" },
         { status: 400 }
       );
     }
 
-    if (!plan.priceId) {
-      return NextResponse.json(
-        { error: "Price ID not configured" },
-        { status: 500 }
-      );
-    }
+    console.log(`Création de session pour l'utilisateur ${userId}, plan: ${priceId}`);
 
-    // Get or create Stripe customer
+    // Récupérer ou créer le client Stripe
     let subscription = await prisma.subscription.findUnique({
       where: { userId }
     });
 
     let stripeCustomerId = subscription?.stripeCustomerId;
 
+    // Si l'utilisateur n'a pas encore de compte client Stripe
     if (!stripeCustomerId) {
+      // Récupérer les infos utilisateur pour obtenir l'email
       const user = await prisma.user.findUnique({
         where: { id: userId }
       });
 
       if (!user) {
         return NextResponse.json(
-          { error: "User not found" },
+          { error: "Utilisateur introuvable" },
           { status: 404 }
         );
       }
 
+      // Créer un client Stripe
       const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
@@ -85,8 +81,9 @@ export async function POST(request: Request) {
       });
 
       stripeCustomerId = customer.id;
+      console.log(`Nouveau client Stripe créé: ${stripeCustomerId}`);
 
-      // Create or update subscription record
+      // Créer ou mettre à jour l'enregistrement d'abonnement
       subscription = await prisma.subscription.upsert({
         where: { userId },
         update: {
@@ -103,7 +100,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // Create Stripe checkout session
+    // Créer une session de paiement Stripe
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       billing_address_collection: 'required',
@@ -123,16 +120,20 @@ export async function POST(request: Request) {
       },
       subscription_data: {
         metadata: {
-          userId
+          userId,
+          plan: priceId  // S'assurer que le plan est aussi dans les métadonnées de l'abonnement
         }
       }
     });
 
+    console.log(`Session de paiement créée: ${session.id}`);
+
+    // Retourner l'URL de la session de paiement
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("Error creating checkout session:", error);
+    console.error("Erreur lors de la création de la session de paiement:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
