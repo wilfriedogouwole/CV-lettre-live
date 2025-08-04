@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   
  // 🔐 1. Récupération du token OAuth2
  const tokenRes = await axios.post(
-    "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=/partenaire",
+    "https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=/partenaire",
     `grant_type=client_credentials&client_id=${API_KEY}&client_secret=${API_SECRET}&scope=api_offresdemploiv2 o2dsoffre`,
     {
       headers: {

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     // 🔐 1. Récupération du token OAuth2
     const tokenRes = await axios.post(
-      "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=/partenaire",
+      "https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=/partenaire",
       `grant_type=client_credentials&client_id=${API_KEY}&client_secret=${API_SECRET}&scope=api_offresdemploiv2 o2dsoffre`,
       {
         headers: {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     const accessToken = tokenRes.data.access_token;
 
     // 🌐 2. Appel à l’API France Travail
-    const apiUrl = new URL("https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search");
+    const apiUrl = new URL("https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search");
 
     if (query) {
       apiUrl.searchParams.append("motsCles", query);
