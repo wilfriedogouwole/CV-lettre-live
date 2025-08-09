@@ -1,151 +1,104 @@
-"use client"
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useCredits } from "@/hooks/use-credits";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
-import { FileText, Loader2, PenLine } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCredits } from '@/hooks/useCredits';
+import { CreditCard, FileText, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '../ui/button';
 
-export function CreditDisplay() {
-  const { credits, isLoading, isError, mutate } = useCredits();
-  const [lastRefreshed, setLastRefreshed] = useState(new Date());
+export default function CreditsDisplay() {
+  const { credits, subscription, isLoading, error } = useCredits();
 
-  // Rafraîchir les données toutes les 30 secondes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      mutate();
-      setLastRefreshed(new Date());
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [mutate]);
-
-  // État de chargement
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Vos crédits</CardTitle>
-          <CardDescription>Chargement de vos crédits...</CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center py-6">
+        <CardContent className="flex items-center justify-center p-6">
           <Loader2 className="h-6 w-6 animate-spin" />
+          <span className="ml-2">Chargement des crédits...</span>
         </CardContent>
       </Card>
     );
   }
 
-  // État d'erreur
-  if (isError) {
+  if (error) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Vos crédits</CardTitle>
-          <CardDescription>Une erreur est survenue</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Impossible de charger vos crédits. Veuillez réessayer plus tard.
-          </p>
-          <Button 
-            onClick={() => mutate()} 
-            variant="outline" 
-            size="sm" 
-            className="mt-4"
-          >
-            Réessayer
-          </Button>
+        <CardContent className="p-6">
+          <p className="text-red-500">Erreur: {error}</p>
         </CardContent>
       </Card>
     );
   }
 
-  // S'assurer que les données sont structurées correctement
-  if (!credits || !credits.credits) {
-    console.error("Structure de crédits invalide:", credits);
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Vos crédits</CardTitle>
-          <CardDescription>Données incorrectes</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Impossible dafficher vos crédits. Format de données incorrect.
-          </p>
-          <Button 
-            onClick={() => mutate()} 
-            variant="outline" 
-            size="sm" 
-            className="mt-4"
-          >
-            Actualiser
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Extraction des données
-  const { cvCredits, letterCredits } = credits.credits;
-  const subscription = credits.subscription;
-  
-  // Vérifier que les valeurs sont numériques
-  const displayCvCredits = typeof cvCredits === 'number' ? cvCredits : 0;
-  const displayLetterCredits = typeof letterCredits === 'number' ? letterCredits : 0;
+  const isUnlimited = (value: number) => value >= 999;
 
   return (
-    <div className="flex justify-center w-full">
-      <Card className="flex flex-col justify-center items-center w-96 h-96">
-        <CardHeader>
-          <CardTitle>Vos crédits</CardTitle>
-          <CardDescription className="text-center">
-            {subscription?.status === "active" ? (
-              `Abonnement ${subscription.plan} - Renouvellement ${formatDistanceToNow(new Date(subscription.currentPeriodEnd), { addSuffix: true, locale: fr })}`
-            ) : (
-              "Plan gratuit"
-            )}
-          </CardDescription>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Crédits CV</CardTitle>
+          <FileText className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="w-full">
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-5 w-5 text-primary" />
-                <span>Crédits CV</span>
-              </div>
-              <span className="font-bold">
-                {displayCvCredits === -1 ? "Illimité" : displayCvCredits}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <PenLine className="h-5 w-5 text-primary" />
-                <span>Crédits lettres</span>
-              </div>
-              <span className="font-bold">
-                {displayLetterCredits === -1 ? "Illimité" : displayLetterCredits}
-              </span>
-            </div>
-            {subscription?.status !== "active" && (
-              <Link href="/pricing" className="mt-4 block">
-                <Button className="w-full">
-                  Obtenir plus de crédits
-                </Button>
-              </Link>
-            )}
-            <Button 
-              onClick={() => mutate()} 
-              variant="ghost" 
-              size="sm" 
-              className="mt-2"
-            >
-              Actualiser les crédits
-            </Button>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {isUnlimited(credits?.cvCredits || 0) ? '∞' : credits?.cvCredits || 0}
           </div>
+          <p className="text-xs text-muted-foreground">
+            {isUnlimited(credits?.cvCredits || 0) ? 'Illimité' : 'Crédits restants'}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Crédits Lettres</CardTitle>
+          <CreditCard className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {isUnlimited(credits?.letterCredits || 0) ? '∞' : credits?.letterCredits || 0}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {isUnlimited(credits?.letterCredits || 0) ? 'Illimité' : 'Crédits restants'}
+          </p>
+        </CardContent>
+      </Card>
+
+      {subscription && (
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">Abonnement</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-center">
+              <span className="capitalize font-medium">{subscription.plan}</span>
+              <span className={`px-2 py-1 rounded-full text-xs ${
+                subscription.status === 'active' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                {subscription.status === 'active' ? 'Actif' : 'Inactif'}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+
+<Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Recharge</CardTitle>
+          <FileText className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+          <Link href="/pricing">
+                  <Button variant="outline" size="sm">
+                    Recharger
+                  </Button>
+                </Link>
+          </div>
+          
         </CardContent>
       </Card>
     </div>

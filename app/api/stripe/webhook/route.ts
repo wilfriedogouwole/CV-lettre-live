@@ -10,6 +10,7 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     const body = await request.text();
@@ -29,12 +30,13 @@ export async function POST(request: Request) {
       case "checkout.session.completed": {
         const session = event.data.object;
         const userId = session.metadata?.userId;
-        const planId = session.metadata?.plan;
+        const planId = session.metadata?.planId;
 
-        console.log(`Checkout complété pour l'utilisateur ${userId} (plan: ${planId})`);
+        console.log(`Checkout complété - UserID: ${userId}, PlanID: ${planId}`);
+        console.log('Métadonnées de la session:', session.metadata);
 
         if (!userId || !planId) {
-          console.error("Metadata manquante dans la session");
+          console.error("Metadata manquante dans la session", { userId, planId, metadata: session.metadata });
           return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
 
@@ -52,28 +54,23 @@ export async function POST(request: Request) {
         // Récupérer les détails complets de l'abonnement
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         
-        // Log pour déboguer
-        console.log(`Détails de l'abonnement récupérés: ${subscriptionId}`);
-        console.log(`Plan ID: ${planId}, Statut: ${subscription.status}`);
-        
         // Définir les crédits selon le plan
-        const credits = {
-          cvCredits: planId === "premium" ? -1 : 5,
-          letterCredits: planId === "premium" ? -1 : 5
-        };
+        const creditsToAssign = getCreditsForPlan(planId);
         
-        console.log(`Crédits à attribuer:`, credits);
+        console.log(`Crédits à attribuer pour le plan ${planId}:`, creditsToAssign);
         
         // Utiliser une transaction pour garantir l'atomicité
         try {
-          await prisma.$transaction([
-            prisma.subscription.upsert({
+          const result = await prisma.$transaction(async (tx) => {
+            // Mettre à jour ou créer l'abonnement
+            const updatedSubscription = await tx.subscription.upsert({
               where: { userId },
               update: {
                 status: "active",
                 plan: planId,
                 stripeCustomerId: session.customer as string,
                 stripeSubscriptionId: subscriptionId,
+                stripePriceId: subscription.items.data[0]?.price.id,
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000)
               },
@@ -83,25 +80,26 @@ export async function POST(request: Request) {
                 plan: planId,
                 stripeCustomerId: session.customer as string,
                 stripeSubscriptionId: subscriptionId,
+                stripePriceId: subscription.items.data[0]?.price.id,
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000)
               }
-            }),
-            prisma.credits.upsert({
+            });
+
+            // Mettre à jour ou créer les crédits
+            const updatedCredits = await tx.credits.upsert({
               where: { userId },
-              update: credits,
+              update: creditsToAssign,
               create: {
                 userId,
-                ...credits
+                ...creditsToAssign
               }
-            })
-          ]);
-          
-          // Vérifier les crédits mis à jour pour déboguer
-          const updatedCredits = await prisma.credits.findUnique({
-            where: { userId }
+            });
+
+            return { subscription: updatedSubscription, credits: updatedCredits };
           });
-          console.log(`Crédits après mise à jour:`, updatedCredits);
+          
+          console.log(`Transaction réussie pour ${userId}:`, result);
           
         } catch (err) {
           console.error("Erreur lors de la transaction Prisma:", err);
@@ -128,25 +126,19 @@ export async function POST(request: Request) {
         // Récupérer les détails de l'abonnement
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         const userId = subscription.metadata?.userId;
-        
-        // Détermine le plan à partir des métadonnées ou du premier item
-        const planId = subscription.metadata?.plan || 
-                      (subscription.items?.data[0]?.price?.id?.includes("premium") ? "premium" : "standard");
+        const planId = subscription.metadata?.planId;
 
-        if (!userId) {
-          console.error("UserId manquant dans les métadonnées de l'abonnement");
+        if (!userId || !planId) {
+          console.error("Métadonnées manquantes dans l'abonnement", { userId, planId });
           return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
 
         console.log(`Paiement réussi pour l'utilisateur ${userId} (plan: ${planId})`);
         
         // Définir les crédits selon le plan
-        const credits = {
-          cvCredits: planId === "premium" ? -1 : 5,
-          letterCredits: planId === "premium" ? -1 : 5
-        };
+        const creditsToRenew = getCreditsForPlan(planId);
         
-        console.log(`Crédits à renouveler:`, credits);
+        console.log(`Crédits à renouveler:`, creditsToRenew);
 
         // Mise à jour périodique des crédits
         try {
@@ -160,7 +152,7 @@ export async function POST(request: Request) {
             }),
             prisma.credits.update({
               where: { userId },
-              data: credits
+              data: creditsToRenew
             })
           ]);
           
@@ -235,18 +227,13 @@ export async function POST(request: Request) {
             })
           ]);
           
-          // Vérifier les crédits mis à jour pour déboguer
-          const updatedCredits = await prisma.credits.findUnique({
-            where: { userId }
-          });
-          console.log(`Crédits après suppression d'abonnement:`, updatedCredits);
+          console.log(`Utilisateur ${userId} réinitialisé au plan gratuit`);
           
         } catch (err) {
           console.error("Erreur lors de la transaction Prisma:", err);
           return NextResponse.json({ error: "Échec de mise à jour en base de données" }, { status: 500 });
         }
 
-        console.log(`Utilisateur ${userId} réinitialisé au plan gratuit`);
         break;
       }
     }
@@ -258,5 +245,27 @@ export async function POST(request: Request) {
       { error: "Échec du traitement du webhook" },
       { status: 500 }
     );
+  }
+}
+
+// Fonction utilitaire pour définir les crédits selon le plan
+function getCreditsForPlan(planId: string) {
+  switch (planId) {
+    case "premium":
+      return {
+        cvCredits: 999, // Valeur élevée pour "illimité"
+        letterCredits: 999
+      };
+    case "standard":
+      return {
+        cvCredits: 5,
+        letterCredits: 5
+      };
+    case "free":
+    default:
+      return {
+        cvCredits: 1,
+        letterCredits: 1
+      };
   }
 }

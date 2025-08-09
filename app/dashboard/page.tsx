@@ -1,4 +1,4 @@
-import { CreditDisplay } from '@/components/credits/credit-display';
+import CreditDisplay from '@/components/credits/credit-display';
 import DashboardHeader from '@/components/dashboard/dashboard-header';
 import { Overview } from '@/components/dashboard/overview';
 import { RecentDocuments } from '@/components/dashboard/recent-documents';
