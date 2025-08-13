@@ -29,7 +29,7 @@ interface Job {
   title: string;
   company: string;
   location: string;
-  description: string | TrustedHTML; // Modifié pour accepter du HTML
+  description: string // TrustedHTML; // Modifié pour accepter du HTML
   salary: string;
   type: string;
   url: string;
@@ -64,6 +64,9 @@ export default function JobsPage() {
     adzuna: true,
     theMuse: true
   });
+  const renderDescription = (desc: string |TrustedHTML) => {
+    return typeof desc === "string" ? desc : desc.toString();
+  };
 
   // Récupérer les types de contrats disponibles
   useEffect(() => {
@@ -386,7 +389,7 @@ export default function JobsPage() {
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                  {job.description}
+                  {renderDescription(job.description)}
                 </p>
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center gap-1">
