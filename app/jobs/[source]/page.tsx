@@ -46,9 +46,6 @@ interface Job {
   salary_max?: number;
   publicationDate?: Date;
 }
-"use client";
-
-// ... (imports existants)
 
 export default function JobDetailPage() {
   const params = useParams();
