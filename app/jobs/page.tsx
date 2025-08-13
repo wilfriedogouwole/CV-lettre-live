@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -30,12 +29,21 @@ interface Job {
   title: string;
   company: string;
   location: string;
-  description: string;
+  description: string | TrustedHTML; // Modifié pour accepter du HTML
   salary: string;
   type: string;
   url: string;
-  source: string;
+  source: "France Travail" | "Adzuna" | "The Muse";
   createdAt: Date;
+  salary_min?: number;
+  salary_max?: number;
+  contractType?: string;
+  publicationDate?: string;
+  sourceUrl?: string; // URL de la source si disponible
+  sourceId?: string; // ID de la source si disponible
+  logoUrl?: string; // URL du logo de l'entreprise si disponible
+  [key: string]: any; // Pour permettre d'autres propriétés dynamiques  
+  rawDescription?: string; // Ajouté pour le stockage brut
 }
 
 export default function JobsPage() {
@@ -51,6 +59,11 @@ export default function JobsPage() {
   const [contractTypes, setContractTypes] = useState<{ code: string; libelle: string }[]>([]);
   const [communes, setCommunes] = useState<{ code: string; libelle: string; codePostal: string }[]>([]);
   const [filteredCommunes, setFilteredCommunes] = useState<{ code: string; libelle: string; codePostal: string }[]>([]);
+  const [activeSources, setActiveSources] = useState({
+    franceTravail: true,
+    adzuna: true,
+    theMuse: true
+  });
 
   // Récupérer les types de contrats disponibles
   useEffect(() => {
@@ -83,7 +96,7 @@ export default function JobsPage() {
         const data = await response.json();
         if (response.ok) {
           setCommunes(data);
-          setFilteredCommunes(data); // Initialiser les communes filtrées
+          setFilteredCommunes(data);
         } else {
           throw new Error(data.error || "Erreur de récupération des communes");
         }
@@ -99,21 +112,50 @@ export default function JobsPage() {
     fetchCommunes();
   }, [toast]);
 
-  // Utilisation de useCallback pour mémoriser la fonction fetchJobs
+  // Charger les jobs sauvegardés depuis le localStorage
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("savedJobs") || "[]");
+    setSavedJobs(saved);
+  }, []);
+
   const fetchJobs = useCallback(async () => {
     setIsLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         q: searchTerm,
         location,
         typeFilter: typeFilter !== "tous" ? typeFilter : "",
         page: page.toString(),
-      });
-      const response = await fetch(`/api/jobs?${params}`);
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Erreur de récupération");
-      setJobs(data.jobs);
-      if (data.jobs.length === 0) {
+      };
+
+      const fetchPromises = [];
+      
+      if (activeSources.franceTravail) {
+        fetchPromises.push(
+          fetch(`/api/jobs?${new URLSearchParams(params)}`).then(res => res.json())
+        );
+      }
+      
+      if (activeSources.adzuna) {
+        fetchPromises.push(
+          fetch(`/api/adzuna?${new URLSearchParams(params)}`).then(res => res.json())
+        );
+      }
+
+      if (activeSources.theMuse) {
+        fetchPromises.push(
+          fetch(`/api/the-muse?${new URLSearchParams(params)}`).then(res => res.json())
+        );
+      }
+
+      const results = await Promise.all(fetchPromises);
+      
+      const allJobs = results.flatMap(result => result?.jobs || [])
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      setJobs(allJobs);
+
+      if (allJobs.length === 0) {
         toast({
           title: "Aucun résultat",
           description: "Aucune offre ne correspond à vos critères",
@@ -128,9 +170,8 @@ export default function JobsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, location, typeFilter, page, toast]);
+  }, [searchTerm, location, typeFilter, page, activeSources, toast]);
 
-  // Charger les offres d'emploi au montage ou lorsque les filtres changent
   useEffect(() => {
     fetchJobs();
   }, [fetchJobs]);
@@ -142,11 +183,16 @@ export default function JobsPage() {
   };
 
   const handleSaveJob = (jobId: string) => {
-    setSavedJobs((prev) => [...new Set([...prev, jobId])]);
-    toast({ title: "Offre sauvegardée", description: "Ajoutée à vos favoris." });
+    const updatedSavedJobs = [...new Set([...savedJobs, jobId])];
+    setSavedJobs(updatedSavedJobs);
+    localStorage.setItem("savedJobs", JSON.stringify(updatedSavedJobs));
+    toast({ 
+      title: "Offre sauvegardée", 
+      description: "Ajoutée à vos favoris.",
+      duration: 2000
+    });
   };
 
-  // Filtrer les communes en fonction de la saisie
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setLocation(value);
@@ -158,6 +204,13 @@ export default function JobsPage() {
     setFilteredCommunes(filtered);
   };
 
+  const toggleSource = (source: keyof typeof activeSources) => {
+    setActiveSources(prev => ({
+      ...prev,
+      [source]: !prev[source]
+    }));
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8">
@@ -165,56 +218,123 @@ export default function JobsPage() {
         <p className="text-muted-foreground">Trouvez votre prochain poste dès maintenant.</p>
       </div>
 
+      <div className="flex flex-wrap gap-2 mb-6">
+        <Button
+          variant={activeSources.franceTravail ? "default" : "outline"}
+          onClick={() => toggleSource("franceTravail")}
+          size="sm"
+        >
+          France Travail
+        </Button>
+        <Button
+          variant={activeSources.adzuna ? "default" : "outline"}
+          onClick={() => toggleSource("adzuna")}
+          size="sm"
+        >
+          Adzuna
+        </Button>
+        <Button
+          variant={activeSources.theMuse ? "default" : "outline"}
+          onClick={() => toggleSource("theMuse")}
+          size="sm"
+        >
+          The Muse
+        </Button>
+      </div>
+
+    {/* Carte de recherche avec styles améliorés */}
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
-            <Input
-              placeholder="Mot-clé, entreprise..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div className="relative">
-              <Input
-                placeholder="Ville ou code postal"
-                value={location}
-                onChange={handleLocationChange}
-                list="communes-list"
-                className="min-w-[200px]" // Largeur minimale de 200px
+          <form onSubmit={handleSearch} className="flex flex-col gap-4 md:flex-row md:items-end">
+            {/* Conteneur flex pour les champs principaux */}
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Champ Mot-clé */}
+              <div className="space-y-1">
+                <label htmlFor="search-term" className="text-sm font-medium text-muted-foreground">
+                  Mot-clé ou entreprise
+                </label>
+                <Input
+                  id="search-term"
+                  placeholder="Développeur, Designer, Marketing..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full"
+                />
+              </div>
 
-              />
-              <datalist id="communes-list">
-                {filteredCommunes.map((commune) => (
-                  <option key={commune.code} value={`${commune.libelle} (${commune.codePostal})`}>
-                    {commune.libelle} ({commune.codePostal})
-                  </option>
-                ))}
-              </datalist>
+              {/* Champ Localisation */}
+              <div className="space-y-1">
+                <label htmlFor="location" className="text-sm font-medium text-muted-foreground">
+                  Localisation
+                </label>
+                <div className="relative">
+                  <Input
+                    id="location"
+                    placeholder="Paris, Lyon, 75000..."
+                    value={location}
+                    onChange={handleLocationChange}
+                    list="communes-list"
+                    className="w-full"
+                  />
+                  <datalist id="communes-list">
+                    {filteredCommunes.map((commune) => (
+                      <option key={commune.code} value={`${commune.libelle} (${commune.codePostal})`}>
+                        {commune.libelle} ({commune.codePostal})
+                      </option>
+                    ))}
+                  </datalist>
+                </div>
+              </div>
             </div>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Type de contrat" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tous">Tous</SelectItem>
-                {contractTypes.map((type) => (
-                  <SelectItem key={type.code} value={type.code}>
-                    {type.libelle}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? <Loader2 className="animate-spin h-4 w-4" /> : "Rechercher"}
-            </Button>
+
+            {/* Conteneur flex pour les filtres et bouton */}
+            <div className="flex flex-col md:flex-row gap-4 md:items-end">
+              {/* Sélecteur de type de contrat */}
+              <div className="space-y-1 min-w-[200px]">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Type de contrat
+                </label>
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tous les types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="tous">Tous</SelectItem>
+                    {contractTypes.map((type) => (
+                      <SelectItem key={type.code} value={type.code}>
+                        {type.libelle}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Bouton de recherche */}
+              <Button 
+                type="submit" 
+                disabled={isLoading} 
+                className="h-10 md:h-auto md:min-h-[40px]"
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin h-4 w-4" />
+                ) : (
+                  "Rechercher"
+                )}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
 
-      <motion.div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <motion.div 
+        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         {isLoading ? (
-          // Affichage des Skeletons pendant le chargement
           Array.from({ length: 6 }).map((_, idx) => (
-            <Card key={idx} className="relative">
+            <Card key={idx} className="relative h-full">
               <CardHeader>
                 <CardTitle>
                   <Skeleton className="h-6 w-3/4" />
@@ -248,60 +368,86 @@ export default function JobsPage() {
               </CardFooter>
             </Card>
           ))
-        ) : (
+        ) : jobs.length > 0 ? (
           jobs.map((job) => (
-            <Card key={job.id} className="relative">
+            <Card key={`${job.source}-${job.id}`} className="relative h-full flex flex-col">
               <CardHeader>
                 <CardTitle className="line-clamp-2">{job.title}</CardTitle>
-                <CardDescription>
+                <CardDescription className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Building className="h-4 w-4" />
-                    {job.company}
+                    <span className="line-clamp-1">{job.company}</span>
                   </div>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    {job.location}
+                    <span className="line-clamp-1">{job.location}</span>
                   </div>
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-3">
+              <CardContent className="flex-grow">
+                <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
                   {job.description}
                 </p>
-                <div className="flex justify-between mt-4 text-sm">
-                  <div className="flex items-center gap-1">💰 {job.salary}</div>
-                  <div className="flex items-center gap-1">💼 {job.type}</div>
+                <div className="flex justify-between text-sm">
+                  <div className="flex items-center gap-1">
+                    💰 {job.salary || 
+                      (job.salary_min && job.salary_max 
+                        ? `${job.salary_min}€ - ${job.salary_max}€` 
+                        : "Non spécifié")}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    💼 {job.type || job.contractType || "Non spécifié"}
+                  </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
                 <span className="text-xs text-muted-foreground">{job.source}</span>
                 <div className="flex gap-2">
-                  <Button onClick={() => router.push(`/jobs/${job.id}`)}>
+                  <Button 
+                    size="icon" 
+                    onClick={() => router.push(`/jobs/${job.source.toLowerCase().replace(' ', '-')}/${job.id}`)}
+                  >
                     <Eye className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleSaveJob(job.id)}
-                    disabled={savedJobs.includes(job.id)}
+                    onClick={() => handleSaveJob(`${job.source}-${job.id}`)}
+                    disabled={savedJobs.includes(`${job.source}-${job.id}`)}
                   >
-                    <Bookmark className="h-4 w-4" />
+                    <Bookmark className={`h-4 w-4 ${
+                      savedJobs.includes(`${job.source}-${job.id}`) ? "text-primary fill-primary" : ""
+                    }`} />
                   </Button>
                 </div>
               </CardFooter>
             </Card>
           ))
+        ) : (
+          <div className="col-span-full text-center py-10">
+            <p className="text-muted-foreground">Aucune offre trouvée. Essayez de modifier vos critères de recherche.</p>
+          </div>
         )}
       </motion.div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-10 gap-4">
-        <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Précédent
-        </Button>
-        <span className="self-center text-sm">Page {page}</span>
-        <Button onClick={() => setPage(page + 1)}>Suivant</Button>
-      </div>
+      {jobs.length > 0 && (
+        <div className="flex justify-center mt-10 gap-4">
+          <Button 
+            variant="outline" 
+            disabled={page === 1} 
+            onClick={() => setPage(page - 1)}
+          >
+            Précédent
+          </Button>
+          <span className="flex items-center px-4 text-sm">Page {page}</span>
+          <Button 
+            variant="outline" 
+            onClick={() => setPage(page + 1)}
+          >
+            Suivant
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
