@@ -258,7 +258,7 @@ export default function JobDetailPage() {
                       rel="noopener noreferrer"
                       className="w-full"
                     >
-                      Voir l'offre originale
+                      Voir l&apos;offre sur The Muse
                     </a>
                   </Button>
                 </div>

@@ -258,7 +258,7 @@ export default function JobDetailPage() {
                       rel="noopener noreferrer"
                       className="w-full"
                     >
-                      Voir l'offre originale
+                      Voir l&apos;offre originale
                     </a>
                   </Button>
                 </div>
