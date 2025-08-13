@@ -9,69 +9,6 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-// Configuration centralisée des plans avec les vrais Price IDs de Stripe
-const PLAN_CONFIG = {
-  "price_1RGHQtPK9vZL53ppxU832fPv": { // Standard Price ID
-    plan: "standard",
-    cvCredits: 5,
-    letterCredits: 5
-  },
-  "price_1RGHR5PK9vZL53ppZXKNf1oy": { // Premium Price ID
-    plan: "premium", 
-    cvCredits: -1,
-    letterCredits: -1
-  }
-};
-
-// Fonction utilitaire pour déterminer le plan et les crédits
-function getPlanConfig(subscription: any) {
-  console.log("Détection du plan pour subscription:", subscription.id);
-  
-  // 1. Vérifier d'abord les métadonnées
-  if (subscription.metadata?.plan) {
-    const planFromMeta = subscription.metadata.plan;
-    console.log("Plan trouvé dans métadonnées:", planFromMeta);
-    
-    if (planFromMeta === "standard") {
-      return { plan: "standard", cvCredits: 5, letterCredits: 5 };
-    } else if (planFromMeta === "premium") {
-      return { plan: "premium", cvCredits: -1, letterCredits: -1 };
-    }
-  }
-  
-  // 2. Vérifier le premier item de l'abonnement
-  if (subscription.items?.data?.[0]?.price?.id) {
-    const priceId = subscription.items.data[0].price.id;
-    console.log("Price ID trouvé:", priceId);
-    
-    const config = PLAN_CONFIG[priceId];
-    if (config) {
-      console.log("Configuration trouvée pour le price ID:", config);
-      return config;
-    }
-  }
-  
-  // 3. Fallback - analyser le nom du produit ou le price ID
-  if (subscription.items?.data?.[0]?.price?.nickname) {
-    const nickname = subscription.items.data[0].price.nickname.toLowerCase();
-    if (nickname.includes("premium")) {
-      return { plan: "premium", cvCredits: -1, letterCredits: -1 };
-    } else if (nickname.includes("standard")) {
-      return { plan: "standard", cvCredits: 5, letterCredits: 5 };
-    }
-  }
-  
-  // 4. Dernier fallback basé sur le montant
-  const amount = subscription.items?.data?.[0]?.price?.unit_amount || 0;
-  if (amount >= 2000) { // 20€ ou plus = premium
-    console.log("Plan premium détecté par le prix:", amount);
-    return { plan: "premium", cvCredits: -1, letterCredits: -1 };
-  } else {
-    console.log("Plan standard détecté par défaut, prix:", amount);
-    return { plan: "standard", cvCredits: 5, letterCredits: 5 };
-  }
-}
-
 export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
@@ -86,109 +23,99 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Signature invalide" }, { status: 400 });
     }
 
-    console.log(`=== Événement webhook reçu : ${event.type} ===`);
+    console.log(`Événement webhook reçu : ${event.type}`);
 
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
         const userId = session.metadata?.userId;
-        
-        console.log(`Checkout complété pour l'utilisateur ${userId}`);
-        console.log("Session metadata:", session.metadata);
+        const planId = session.metadata?.plan;
 
-        if (!userId) {
-          console.error("UserId manquant dans la session metadata");
+        console.log(`Checkout complété pour l'utilisateur ${userId} (plan: ${planId})`);
+
+        if (!userId || !planId) {
+          console.error("Metadata manquante dans la session");
           return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
 
+        // Vérifier que la subscription existe dans la session
         if (!session.subscription) {
           console.error("ID d'abonnement manquant dans la session");
           return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
 
+        // Récupération des détails de l'abonnement
         const subscriptionId = typeof session.subscription === 'string' 
           ? session.subscription 
           : session.subscription.id;
           
         // Récupérer les détails complets de l'abonnement
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-          expand: ['items.data.price']
-        });
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         
-        console.log("Détails de l'abonnement récupérés:", {
-          id: subscription.id,
-          status: subscription.status,
-          metadata: subscription.metadata,
-          priceId: subscription.items.data[0]?.price?.id
-        });
+        // Log pour déboguer
+        console.log(`Détails de l'abonnement récupérés: ${subscriptionId}`);
+        console.log(`Plan ID: ${planId}, Statut: ${subscription.status}`);
         
-        // Obtenir la configuration du plan
-        const planConfig = getPlanConfig(subscription);
-        console.log("Configuration du plan déterminée:", planConfig);
+        // Définir les crédits selon le plan
+        const credits = {
+          cvCredits: planId === "premium" ? -1 : 5,
+          letterCredits: planId === "premium" ? -1 : 5
+        };
+        
+        console.log(`Crédits à attribuer:`, credits);
         
         // Utiliser une transaction pour garantir l'atomicité
         try {
-          const result = await prisma.$transaction(async (tx) => {
-            // Mise à jour de l'abonnement
-            const updatedSubscription = await tx.subscription.upsert({
+          await prisma.$transaction([
+            prisma.subscription.upsert({
               where: { userId },
               update: {
                 status: "active",
-                plan: planConfig.plan,
+                plan: planId,
                 stripeCustomerId: session.customer as string,
                 stripeSubscriptionId: subscriptionId,
-                stripePriceId: subscription.items.data[0]?.price?.id || null,
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000)
               },
               create: {
                 userId,
                 status: "active",
-                plan: planConfig.plan,
+                plan: planId,
                 stripeCustomerId: session.customer as string,
                 stripeSubscriptionId: subscriptionId,
-                stripePriceId: subscription.items.data[0]?.price?.id || null,
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000)
               }
-            });
-            
-            // Mise à jour des crédits
-            const updatedCredits = await tx.credits.upsert({
+            }),
+            prisma.credits.upsert({
               where: { userId },
-              update: {
-                cvCredits: planConfig.cvCredits,
-                letterCredits: planConfig.letterCredits
-              },
+              update: credits,
               create: {
                 userId,
-                cvCredits: planConfig.cvCredits,
-                letterCredits: planConfig.letterCredits
+                ...credits
               }
-            });
-            
-            return { updatedSubscription, updatedCredits };
-          });
+            })
+          ]);
           
-          console.log(`✅ Mise à jour réussie pour ${userId}:`, {
-            subscription: result.updatedSubscription.plan,
-            credits: {
-              cv: result.updatedCredits.cvCredits,
-              letter: result.updatedCredits.letterCredits
-            }
+          // Vérifier les crédits mis à jour pour déboguer
+          const updatedCredits = await prisma.credits.findUnique({
+            where: { userId }
           });
+          console.log(`Crédits après mise à jour:`, updatedCredits);
           
         } catch (err) {
-          console.error("❌ Erreur lors de la transaction Prisma:", err);
+          console.error("Erreur lors de la transaction Prisma:", err);
           return NextResponse.json({ error: "Échec de mise à jour en base de données" }, { status: 500 });
         }
 
+        console.log(`Mise à jour réussie pour ${userId}`);
         break;
       }
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object;
         
+        // Vérifier que la subscription existe
         if (!invoice.subscription) {
           console.error("ID d'abonnement manquant dans la facture");
           return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
@@ -199,183 +126,134 @@ export async function POST(request: Request) {
           : invoice.subscription.id;
         
         // Récupérer les détails de l'abonnement
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-          expand: ['items.data.price']
-        });
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const userId = subscription.metadata?.userId;
         
-        // Récupérer l'utilisateur via l'abonnement en base
-        const dbSubscription = await prisma.subscription.findFirst({
-          where: { stripeSubscriptionId: subscriptionId }
-        });
-        
-        if (!dbSubscription) {
-          console.error("Abonnement non trouvé en base pour:", subscriptionId);
-          return NextResponse.json({ error: "Abonnement introuvable" }, { status: 404 });
+        // Détermine le plan à partir des métadonnées ou du premier item
+        const planId = subscription.metadata?.plan || 
+                      (subscription.items?.data[0]?.price?.id?.includes("premium") ? "premium" : "standard");
+
+        if (!userId) {
+          console.error("UserId manquant dans les métadonnées de l'abonnement");
+          return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
+
+        console.log(`Paiement réussi pour l'utilisateur ${userId} (plan: ${planId})`);
         
-        const userId = dbSubscription.userId;
-        console.log(`Paiement réussi pour l'utilisateur ${userId}`);
+        // Définir les crédits selon le plan
+        const credits = {
+          cvCredits: planId === "premium" ? -1 : 5,
+          letterCredits: planId === "premium" ? -1 : 5
+        };
         
-        // Obtenir la configuration du plan
-        const planConfig = getPlanConfig(subscription);
-        console.log("Renouvellement - Configuration du plan:", planConfig);
+        console.log(`Crédits à renouveler:`, credits);
 
         // Mise à jour périodique des crédits
         try {
-          const result = await prisma.$transaction(async (tx) => {
-            const updatedSubscription = await tx.subscription.update({
+          await prisma.$transaction([
+            prisma.subscription.update({
               where: { userId },
               data: {
-                status: subscription.status,
-                plan: planConfig.plan,
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000)
               }
-            });
-            
-            const updatedCredits = await tx.credits.upsert({
+            }),
+            prisma.credits.update({
               where: { userId },
-              update: {
-                cvCredits: planConfig.cvCredits,
-                letterCredits: planConfig.letterCredits
-              },
-              create: {
-                userId,
-                cvCredits: planConfig.cvCredits,
-                letterCredits: planConfig.letterCredits
-              }
-            });
-            
-            return { updatedSubscription, updatedCredits };
-          });
+              data: credits
+            })
+          ]);
           
-          console.log(`✅ Crédits renouvelés pour ${userId}:`, {
-            credits: {
-              cv: result.updatedCredits.cvCredits,
-              letter: result.updatedCredits.letterCredits
-            }
+          // Vérifier les crédits mis à jour pour déboguer
+          const updatedCredits = await prisma.credits.findUnique({
+            where: { userId }
           });
+          console.log(`Crédits après renouvellement:`, updatedCredits);
           
         } catch (err) {
-          console.error("❌ Erreur lors du renouvellement:", err);
+          console.error("Erreur lors de la transaction Prisma:", err);
           return NextResponse.json({ error: "Échec de mise à jour en base de données" }, { status: 500 });
         }
 
+        console.log(`Crédits renouvelés pour ${userId}`);
         break;
       }
 
       case "customer.subscription.updated": {
         const subscription = event.data.object;
-        
-        // Récupérer l'utilisateur via l'abonnement en base
-        const dbSubscription = await prisma.subscription.findFirst({
-          where: { stripeSubscriptionId: subscription.id }
-        });
-        
-        if (!dbSubscription) {
-          console.log("Abonnement non trouvé en base pour mise à jour:", subscription.id);
-          return NextResponse.json({ received: true });
-        }
-        
-        const userId = dbSubscription.userId;
-        console.log(`Abonnement mis à jour pour l'utilisateur ${userId}, nouveau statut: ${subscription.status}`);
+        const userId = subscription.metadata?.userId;
 
-        // Récupérer les détails complets pour la configuration
-        const fullSubscription = await stripe.subscriptions.retrieve(subscription.id, {
-          expand: ['items.data.price']
-        });
-        
-        const planConfig = getPlanConfig(fullSubscription);
-
-        // Mise à jour des informations d'abonnement et des crédits si nécessaire
-        try {
-          await prisma.$transaction(async (tx) => {
-            await tx.subscription.update({
-              where: { userId },
-              data: {
-                status: subscription.status,
-                plan: planConfig.plan,
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000)
-              }
-            });
-            
-            // Si l'abonnement devient inactif, réinitialiser les crédits
-            if (subscription.status === "canceled" || subscription.status === "unpaid") {
-              await tx.credits.update({
-                where: { userId },
-                data: {
-                  cvCredits: 1,
-                  letterCredits: 1
-                }
-              });
-              console.log(`Crédits réinitialisés pour ${userId} (abonnement ${subscription.status})`);
-            }
-          });
-          
-          console.log(`✅ Statut d'abonnement mis à jour pour ${userId}`);
-        } catch (err) {
-          console.error("❌ Erreur lors de la mise à jour:", err);
+        if (!userId) {
+          console.error("UserId manquant dans les métadonnées");
+          return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
 
+        console.log(`Abonnement mis à jour pour l'utilisateur ${userId}`);
+
+        // Mise à jour des informations d'abonnement uniquement
+        await prisma.subscription.update({
+          where: { userId },
+          data: {
+            status: subscription.status,
+            currentPeriodStart: new Date(subscription.current_period_start * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+          }
+        });
+
+        console.log(`Statut d'abonnement mis à jour pour ${userId}`);
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object;
-        
-        // Récupérer l'utilisateur via l'abonnement en base
-        const dbSubscription = await prisma.subscription.findFirst({
-          where: { stripeSubscriptionId: subscription.id }
-        });
-        
-        if (!dbSubscription) {
-          console.log("Abonnement non trouvé en base pour suppression:", subscription.id);
-          return NextResponse.json({ received: true });
+        const userId = subscription.metadata?.userId;
+
+        if (!userId) {
+          console.error("UserId manquant dans les métadonnées");
+          return NextResponse.json({ error: "Données incomplètes" }, { status: 400 });
         }
-        
-        const userId = dbSubscription.userId;
+
         console.log(`Abonnement supprimé pour l'utilisateur ${userId}`);
 
         // Réinitialisation vers le plan gratuit
         try {
-          await prisma.$transaction(async (tx) => {
-            await tx.subscription.update({
+          await prisma.$transaction([
+            prisma.subscription.update({
               where: { userId },
               data: {
                 status: "inactive",
                 plan: "free",
-                stripeSubscriptionId: null,
-                stripePriceId: null
+                stripeSubscriptionId: null
               }
-            });
-            
-            await tx.credits.update({
+            }),
+            prisma.credits.update({
               where: { userId },
               data: {
                 cvCredits: 1,
                 letterCredits: 1
               }
-            });
-          });
+            })
+          ]);
           
-          console.log(`✅ Utilisateur ${userId} réinitialisé au plan gratuit`);
+          // Vérifier les crédits mis à jour pour déboguer
+          const updatedCredits = await prisma.credits.findUnique({
+            where: { userId }
+          });
+          console.log(`Crédits après suppression d'abonnement:`, updatedCredits);
           
         } catch (err) {
-          console.error("❌ Erreur lors de la suppression:", err);
+          console.error("Erreur lors de la transaction Prisma:", err);
           return NextResponse.json({ error: "Échec de mise à jour en base de données" }, { status: 500 });
         }
 
+        console.log(`Utilisateur ${userId} réinitialisé au plan gratuit`);
         break;
       }
-
-      default:
-        console.log(`Événement non géré: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("❌ Erreur générale du webhook :", error);
+    console.error("Erreur du webhook :", error);
     return NextResponse.json(
       { error: "Échec du traitement du webhook" },
       { status: 500 }
