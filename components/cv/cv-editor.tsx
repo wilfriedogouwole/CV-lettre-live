@@ -117,7 +117,7 @@ export default function CVEditor({ cv, onUpdateCV }: CVEditorProps) {
             location: "",
             startDate: "",
             endDate: "",
-            description: ""
+           descriptionList: [""] 
           }
         ]
       }

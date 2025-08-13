@@ -5,22 +5,23 @@ import { NextResponse } from "next/server";
 
 const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000" || "https://cvmaster.derrickogouwole.fr/";
 
+
 // Configuration des plans disponibles
 const PLANS = {
   standard: {
     name: "Standard",
     priceId: "price_1RGHQtPK9vZL53ppxU832fPv",
     credits: {
-      cvCredits: 5,
-      letterCredits: 5
+      cv: 5,
+      letter: 5
     }
   },
   premium: {
-    name: "Premium", 
+    name: "Premium",
     priceId: "price_1RGHR5PK9vZL53ppZXKNf1oy",
     credits: {
-      cvCredits: 999, // Utiliser une grande valeur au lieu de -1
-      letterCredits: 999
+      cv: -1,
+      letter: -1
     }
   }
 };
@@ -37,18 +38,18 @@ export async function POST(request: Request) {
     }
 
     // Récupérer l'ID du plan choisi depuis la requête
-    const { planId } = await request.json();
-    const plan = PLANS[planId as keyof typeof PLANS];
+    const { priceId } = await request.json();
+    const plan = PLANS[priceId as keyof typeof PLANS];
 
     // Vérifier que le plan existe
     if (!plan) {
       return NextResponse.json(
-        { error: `Plan invalide: ${planId}` },
+        { error: "Plan invalide" },
         { status: 400 }
       );
     }
 
-    console.log(`Création de session pour l'utilisateur ${userId}, plan: ${planId}`);
+    console.log(`Création de session pour l'utilisateur ${userId}, plan: ${priceId}`);
 
     // Récupérer ou créer le client Stripe
     let subscription = await prisma.subscription.findUnique({
@@ -81,6 +82,22 @@ export async function POST(request: Request) {
 
       stripeCustomerId = customer.id;
       console.log(`Nouveau client Stripe créé: ${stripeCustomerId}`);
+
+      // Créer ou mettre à jour l'enregistrement d'abonnement
+      subscription = await prisma.subscription.upsert({
+        where: { userId },
+        update: {
+          stripeCustomerId,
+          status: "inactive",
+          plan: priceId
+        },
+        create: {
+          userId,
+          stripeCustomerId,
+          status: "inactive",
+          plan: priceId
+        }
+      });
     }
 
     // Créer une session de paiement Stripe
@@ -95,28 +112,24 @@ export async function POST(request: Request) {
         },
       ],
       mode: 'subscription',
-      success_url: `${DOMAIN}/dashboard?success=true&plan=${planId}`,
+      success_url: `${DOMAIN}/dashboard?success=true`,
       cancel_url: `${DOMAIN}/pricing?canceled=true`,
       metadata: {
         userId,
-        planId // Assurer la cohérence du nom
+        plan: priceId
       },
       subscription_data: {
         metadata: {
           userId,
-          planId
+          plan: priceId  // S'assurer que le plan est aussi dans les métadonnées de l'abonnement
         }
       }
     });
 
-    console.log(`Session de paiement créée: ${session.id} pour le plan ${planId}`);
+    console.log(`Session de paiement créée: ${session.id}`);
 
     // Retourner l'URL de la session de paiement
-    return NextResponse.json({ 
-      url: session.url,
-      sessionId: session.id,
-      planId 
-    });
+    return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Erreur lors de la création de la session de paiement:", error);
     return NextResponse.json(

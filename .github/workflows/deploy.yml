@@ -100,6 +100,11 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          THE_MUSE_API_KEY: ${{secrets.THE_MUSE_API_KEY}}
+          ADZUNA_APP_KEY: ${{secrets.ADZUNA_APP_KEY}}
+          ADZUNA_APP_ID: ${{secrets.ADZUNA_APP_ID}}
+          PREMIUM_PRICE_ID: ${{secrets.PREMIUM_PRICE_ID}}
+          STANDARD_PRICE_ID: ${{secrets.STANDARD_PRICE_ID}}
 
         run: |
             docker pull derrick93/cvdocker:v1
@@ -115,5 +120,10 @@ jobs:
               -e STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" \
               -e NEXT_PUBLIC_APP_URL="https://cvmaster.derrickogouwole.fr" \
               -e NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
+              -e THE_MUSE_API_KEY="$THE_MUSE_API_KEY" \
+              -e ADZUNA_APP_KEY="$ADZUNA_APP_KEY" \
+              -e ADZUNA_APP_ID="$ADZUNA_APP_ID" \
+              -e PREMIUM_PRICE_ID="$PREMIUM_PRICE_ID" \
+              -e STANDARD_PRICE_ID="$STANDARD_PRICE_ID" \
               --name cvdocker-new -d derrick93/cvdocker:v1
             docker system prune --all --volumes --force

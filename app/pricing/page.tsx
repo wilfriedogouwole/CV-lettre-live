@@ -1,16 +1,15 @@
 "use client"
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Check, Sparkles } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from "next/link";
 
 const plans = [
   {
-    id: "free",
     name: "Gratuit",
     description: "Pour commencer votre recherche d'emploi",
     price: "0€",
@@ -25,7 +24,6 @@ const plans = [
     popular: false
   },
   {
-    id: "standard",
     name: "Standard",
     description: "Pour une recherche active",
     price: "9.99€",
@@ -43,7 +41,6 @@ const plans = [
     popular: true
   },
   {
-    id: "premium",
     name: "Premium",
     description: "Pour les professionnels",
     price: "19.99€",
@@ -67,43 +64,26 @@ export default function PricingPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const handleSubscribe = async (planId: string) => {
-    if (planId === "free") {
-      router.push("/dashboard");
-      return;
-    }
-
-    setIsLoading(planId);
+  const handleSubscribe = async (priceId: string) => {
+    setIsLoading(priceId);
     try {
-      console.log(`Tentative d'abonnement au plan: ${planId}`);
-      
       const response = await fetch("/api/stripe/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          planId, // Envoyer planId au lieu de priceId
+          priceId,
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Erreur API:', errorData);
-        throw new Error(errorData.error || 'Erreur lors de la création de la session');
-      }
-
       const data = await response.json();
-      console.log('Réponse API:', data);
 
       if (data.url) {
         window.location.href = data.url;
-      } else {
-        throw new Error('URL de session manquante');
       }
     } catch (error) {
-      console.error("Erreur lors de l'abonnement:", error);
-      // Vous pourriez afficher une notification d'erreur ici
+      console.error("Error:", error);
     } finally {
       setIsLoading(null);
     }
@@ -122,7 +102,7 @@ export default function PricingPage() {
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan) => (
             <Card 
-              key={plan.id}
+              key={plan.name}
               className={`relative ${plan.popular ? 'border-primary shadow-lg' : ''}`}
             >
               {plan.popular && (
@@ -157,10 +137,10 @@ export default function PricingPage() {
                   <Button 
                     className="w-full"
                     variant={plan.buttonVariant}
-                    onClick={() => handleSubscribe(plan.id)}
-                    disabled={isLoading === plan.id}
+                    onClick={() => plan.name !== "Gratuit" && handleSubscribe(plan.name.toLowerCase())}
+                    disabled={isLoading === plan.name.toLowerCase()}
                   >
-                    {isLoading === plan.id ? (
+                    {isLoading === plan.name.toLowerCase() ? (
                       <Sparkles className="mr-2 h-4 w-4 animate-spin" />
                     ) : null}
                     {plan.buttonText}
