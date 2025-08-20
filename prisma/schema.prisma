@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -11,44 +8,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Ajout de l'enum UserRole manquant
+enum UserRole {
+  CANDIDATE
+  RECRUITER
+  ADMIN
+  COMPAGNY
+}
+
+enum EmploymentType {
+  CDI
+  CDD
+  STAGE
+  ALTERNANCE
+  FREELANCE
+  INTERIM
+}
+
+enum CompanySize {
+  SIZE_1_10
+  SIZE_11_50
+  SIZE_51_200
+  SIZE_201_500
+  SIZE_500_PLUS
+}
+
+// Renommage de ApplicationStatus vers JobApplicationStatus pour cohérence
+enum JobApplicationStatus {
+  PENDING
+  REVIEWED
+  INTERVIEW
+  ACCEPTED
+  REJECTED
+}
+
 model User {
-  id           String        @id
-  email        String        @unique
+  id           String           @id
+  email        String           @unique
   name         String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
   cvs          CV[]
   letters      CoverLetter[]
+  credits      Credits?
   applications JobApplication[]
   kanbanCards  KanbanCard[]
   subscription Subscription?
-  credits      Credits?
+  role         UserRole         @default(CANDIDATE)
+  companyProfile CompanyProfile?
+  
+  @@map("users")
+}
+
+model CompanyProfile {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  companyName String
+  description String?
+  website     String?
+  logo        String?
+  industry    String?
+  size        CompanySize?
+  location    String?
+  phone       String?
+  verified    Boolean     @default(false)
+  
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobListings JobListing[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("company_profiles")
 }
 
 model Credits {
   id            String   @id @default(cuid())
   userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   cvCredits     Int      @default(1)
   letterCredits Int      @default(1)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
 
-
 model Subscription {
-  id                 String   @id @default(cuid())
-  userId             String   @unique
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stripeCustomerId   String   @unique
-  stripePriceId      String?
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  stripeCustomerId     String   @unique
+  stripePriceId        String?
   stripeSubscriptionId String?
-  status             String   @default("inactive")
-  plan               String   @default("free")
-  currentPeriodStart DateTime @default(now())
-  currentPeriodEnd   DateTime @default(now())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  status               String   @default("inactive")
+  plan                 String   @default("free")
+  currentPeriodStart   DateTime @default(now())
+  currentPeriodEnd     DateTime @default(now())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([status])
 }
 
 model CV {
@@ -59,59 +121,99 @@ model CV {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobPosition String?
   company     String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([templateId])
+  @@index([userId])
 }
 
 model CoverLetter {
   id          String   @id @default(cuid())
   title       String
-  content     String   @db.Text
-  templateId  String   @default("template1")
+  content     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   jobPosition String?
   company     String?
+  templateId  String   @default("template1")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model JobListing {
+  id              String         @id @default(cuid())
+  title           String
+  description     String         @db.Text
+  requirements    String         @db.Text
+  location        String
+  salaryMin       Int?
+  salaryMax       Int?
+  salaryCurrency  String?        @default("EUR")
+  employmentType  EmploymentType?
+  remote          Boolean?       @default(false)
+  published       Boolean        @default(false)
+  expiresAt       DateTime?
+  
+  // Relations
+  companyProfileId String
+  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+  // Correction : utiliser JobApplication au lieu de Application
+  applications     JobApplication[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  @@map("job_listings")
+  @@index([companyProfileId])
+  @@index([published])
+  @@index([createdAt])
 }
 
 model Job {
-  id           String   @id @default(cuid())
+  id           String           @id @default(cuid())
   title        String
   company      String
   location     String
-  description  String   @db.Text
+  description  String
   salary       String?
   type         String?
   url          String
   source       String
-  createdAt    DateTime @default(now())
+  createdAt    DateTime         @default(now())
   applications JobApplication[]
-  
+
   @@index([title])
   @@index([company])
   @@index([location])
+  @@index([source])
 }
 
 model JobApplication {
-  id            String   @id @default(cuid())
+  id            String               @id @default(cuid())
   jobId         String
   userId        String
   cvId          String?
   letterTitle   String?
-  letterContent String?  @db.Text
-  status        String   @default("pending")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  letterContent String?
+  status        JobApplicationStatus @default(PENDING)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  job           Job                  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobListingId  String?
+  jobListing    JobListing?          @relation(fields: [jobListingId], references: [id], onDelete: Cascade)
   
   @@unique([jobId, userId])
+  @@unique([jobListingId, userId])
+  @@map("JobApplication")
+  @@index([jobListingId])
+  @@index([jobId])
+  @@index([userId])
+  // Suppression de l'index sur status car c'est un enum et non un champ scalaire
 }
 
 model KanbanCard {
@@ -120,7 +222,7 @@ model KanbanCard {
   company      String
   location     String   @default("")
   contractType String   @default("")
-  status       String   // 'wishlist', 'applied', 'followup', 'interview','finished'
+  status       String
   date         DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
