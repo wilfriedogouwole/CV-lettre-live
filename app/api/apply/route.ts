@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         cvId,
         letterTitle,
         letterContent,
-        status: "pending"
+        status: "PENDING"
       }
     });
 
